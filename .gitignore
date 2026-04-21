@@ -61,6 +61,7 @@ buildNumber.properties
 .settings
 .springBeans
 .sts4-cache
+.metadata
 
 # Node / React #
 node_modules/
