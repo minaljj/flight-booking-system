@@ -1,5 +1,4 @@
 package com.flightapp.user_service.dto;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

@@ -1,6 +1,7 @@
 package com.flightapp.user_service.dto;
-import lombok.Data;
+
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class JwtResponse {

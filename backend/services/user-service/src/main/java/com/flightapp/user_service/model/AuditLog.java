@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,9 +25,9 @@ private String username;
 private String details;
 
 public AuditLog(String action, String username, String details) {
-    this.timestamp = Instant.now();
-    this.action = action;
-    this.username = username;
-    this.details = details;
+	this.action = action;
+	this.username=username;
+	this.details = details;
+	this.timestamp=Instant.now();
 }
 }
