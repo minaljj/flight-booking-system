@@ -61,7 +61,7 @@ buildNumber.properties
 .settings
 .springBeans
 .sts4-cache
-.metadata
+.metadata/
 bin/
 tmp/
 *.tmp
