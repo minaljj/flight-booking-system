@@ -5,16 +5,16 @@ import com.flightapp.user_service.dto.LoginRequest;
 import com.flightapp.user_service.dto.MessageResponse;
 import com.flightapp.user_service.dto.SignupRequest;
 import com.flightapp.user_service.model.AuditLog;
-import com.flightapp.user_service.model.BlacklistedToken;
+
 import com.flightapp.user_service.model.RefreshToken;
 import com.flightapp.user_service.model.Role;
 import com.flightapp.user_service.model.User;
 import com.flightapp.user_service.repository.AuditLogRepository;
-import com.flightapp.user_service.repository.BlacklistedTokenRepository;
+
 import com.flightapp.user_service.repository.RoleRepository;
 import com.flightapp.user_service.repository.UserRepository;
 import com.flightapp.user_service.security.JwtUtils;
-import com.flightapp.user_service.security.UserDetailsImplementation;
+import com.flightapp.user_service.security.UserDetailsServiceImplementation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,14 +43,15 @@ public class AuthService {
     private RoleRepository roleRepository;
     @Autowired
     private AuditLogRepository auditLogRepository;
-    @Autowired
-    private BlacklistedTokenRepository blacklistedTokenRepository;
+   
     @Autowired
     private RefreshTokenService refreshTokenService;
     @Autowired
     private PasswordEncoder encoder;
     @Autowired
     private JwtUtils jwtUtils;
+    @Autowired
+    private TokenBlacklistService tokenBlacklistService;
     public JwtResponse authenticateUser(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -60,7 +61,7 @@ public class AuthService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
-        UserDetailsImplementation userDetails = (UserDetailsImplementation) authentication.getPrincipal();
+        UserDetailsServiceImplementation userDetails = (UserDetailsServiceImplementation) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
@@ -125,15 +126,18 @@ public class AuthService {
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
             String jwt = headerAuth.substring(7);
             try {
-                Instant expiry = jwtUtils.getExpirationDateFromJwtToken(jwt).toInstant();
-                blacklistedTokenRepository.save(new BlacklistedToken(jwt, expiry));
+                long expirationMs =
+                        jwtUtils.getExpirationDateFromJwtToken(jwt).getTime()
+                                - System.currentTimeMillis();
+
+                tokenBlacklistService.blacklistToken(jwt, expirationMs);
             } catch (Exception e) {
-                blacklistedTokenRepository.save(new BlacklistedToken(jwt));
+                tokenBlacklistService.blacklistToken(jwt, 0);
             }
         }
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof UserDetailsImplementation) {
-            UserDetailsImplementation userDetails = (UserDetailsImplementation) auth.getPrincipal();
+        if (auth != null && auth.getPrincipal() instanceof UserDetailsServiceImplementation) {
+            UserDetailsServiceImplementation userDetails = (UserDetailsServiceImplementation) auth.getPrincipal();
             refreshTokenService.deleteByUserId(userDetails.getId());
             auditLogRepository.save(
                     new AuditLog("LOGOUT", userDetails.getUsername(), "User logged out")

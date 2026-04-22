@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
-public class UserDetailsImplementation implements UserDetailsService {
+public class UserDetailsServiceImplementation implements UserDetailsService {
 	@Autowired
 	UserRepository userRepository;
 	@Override
@@ -18,7 +18,7 @@ public class UserDetailsImplementation implements UserDetailsService {
 		{
 			throw new org.springframework.security.authentication.LockedException("User account is blocked!");
 		}
-		return UserDetailsImplementation.build(user);
+		return UserDetailsServiceImplementation.build(user);
 	}
 
 }
