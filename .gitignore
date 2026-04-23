@@ -131,6 +131,7 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+package-lock.json
 
 # Terraform #
 .terraform/
@@ -151,3 +152,9 @@ Thumbs.db
 
 # Docker #
 .docker/
+
+# Certificates and Keys
+*.pem
+*.der
+*.key
+certs/
