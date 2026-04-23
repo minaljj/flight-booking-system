@@ -12,7 +12,7 @@ import jakarta.validation.ConstraintValidatorContext;
 public class PasswordValidator implements ConstraintValidator<ValidPassword, String> {
 	  @Autowired
 	    private PasswordProperties passwordProperties;
-
+//validation starts
 	    @Override
 	    public boolean isValid(String password, ConstraintValidatorContext context) {
 	        if (password == null) {

@@ -107,26 +107,9 @@ Thumbs.db
 .docker/
 
 
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
+# Certificates and Keys
 *.pem
+<<<<<<< HEAD
 
 # debug
 npm-debug.log*
@@ -147,3 +130,9 @@ next-env.d.ts
 ### VS Code ###
 .vscode/
 >>>>>>> Stashed changes
+=======
+*.der
+*.key
+certs/
+**/src/main/resources/certs/
+>>>>>>> d3fe997bff95d13cf5dd0f2e0279dfbe74ef4d0f
