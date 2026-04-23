@@ -152,3 +152,9 @@ Thumbs.db
 
 # Docker #
 .docker/
+
+# Certificates and Keys
+*.pem
+*.der
+*.key
+certs/
