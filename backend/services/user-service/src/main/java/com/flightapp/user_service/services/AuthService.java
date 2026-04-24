@@ -1,4 +1,4 @@
-package com.flightapp.user_service.service;
+package com.flightapp.user_service.services;
 
 import com.flightapp.user_service.dto.JwtResponse;
 import com.flightapp.user_service.dto.LoginRequest;
