@@ -1,26 +1,28 @@
 package com.flightapp.user_service.dto;
 
-import java.util.Set;
-
 import com.flightapp.user_service.validation.ValidPassword;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.util.Set;
 
 @Data
 public class SignupRequest {
     @NotBlank
+    @Size(min = 3, max = 20)
     private String username;
 
     @NotBlank
+    @Size(max = 50)
     @Email
     private String email;
 
     @NotBlank
+    @Size(min = 8, max = 40)
     @ValidPassword
     private String password;
 
-    // e.g. ["ROLE_AIRLINE"]. ROLE_ADMIN will never be allowed via self-registration
     private Set<String> roles;
 }

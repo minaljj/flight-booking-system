@@ -1,54 +1,72 @@
 package com.flightapp.user_service.controller;
 
+import com.flightapp.user_service.dto.BlockUserRequest;
 import com.flightapp.user_service.dto.LoginRequest;
-import com.flightapp.user_service.dto.MessageResponse;
 import com.flightapp.user_service.dto.SignupRequest;
+import com.flightapp.user_service.dto.TokenRefreshRequest;
 import com.flightapp.user_service.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1.0/flight/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+	@Autowired
+	private AuthService authService;
 
-  
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
-        String response = authService.authenticateUser(loginRequest);
-        return ResponseEntity.ok(new MessageResponse(response));
-    }
+	@PostMapping("/login")
+	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+		return ResponseEntity.ok(authService.authenticateUser(loginRequest));
+	}
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody SignupRequest signupRequest) {
-        String response = authService.registerUser(signupRequest);
-        return ResponseEntity.ok(new MessageResponse(response));
-    }
+	@PostMapping("/register")
+	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+		try {
+			authService.registerUser(signUpRequest);
+			return ResponseEntity.status(201).build();
+		} catch (RuntimeException e) {
+			return ResponseEntity.badRequest().build();
+		}
+	}
 
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@RequestBody String refreshToken) {
-        String response = authService.refreshJwtToken(refreshToken);
-        return ResponseEntity.ok(new MessageResponse(response));
-    }
+	@PostMapping("/refresh")
+	public ResponseEntity<?> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
+		try {
+			return ResponseEntity.ok(authService.refreshJwtToken(request));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(403).build();
+		}
+	}
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        String response = authService.logoutUser();
-        return ResponseEntity.ok(new MessageResponse(response));
+	
+    @GetMapping("/admin/users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<java.util.List<com.flightapp.user_service.model.User>> getAllUsers() {
+        return ResponseEntity.ok(authService.getAllUsers());
     }
+    
+	@PostMapping("/logout")
+	public ResponseEntity<?> logoutUser(HttpServletRequest request) {
+		return ResponseEntity.ok().build();
+	}
 
-    @PostMapping("/block-user")
-    public ResponseEntity<?> blockUser(
-            @RequestParam String username,
-            @RequestParam boolean block,
-            @RequestParam String adminName
-    ) {
-        String response = authService.blockUser(username, block, adminName);
-        return ResponseEntity.ok(new MessageResponse(response));
-    }
+	@PostMapping("/admin/block-user")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> blockUser(@Valid @RequestBody BlockUserRequest request, Authentication auth) {
+		try {
+			return ResponseEntity.ok(authService.blockUser(request.getUsername(), request.getBlock(), auth.getName()));
+		} catch (RuntimeException e) {
+			return ResponseEntity.badRequest().build();
+		}
+	}
 }
-
