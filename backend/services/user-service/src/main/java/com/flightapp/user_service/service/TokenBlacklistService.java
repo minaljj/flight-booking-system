@@ -1,4 +1,4 @@
-package com.flightapp.user_service.services;
+package com.flightapp.user_service.service;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
