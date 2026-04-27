@@ -4,10 +4,15 @@ import com.flightapp.user_service.dto.BlockUserRequest;
 import com.flightapp.user_service.dto.LoginRequest;
 import com.flightapp.user_service.dto.SignupRequest;
 import com.flightapp.user_service.dto.TokenRefreshRequest;
+import com.flightapp.user_service.model.User;
 import com.flightapp.user_service.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -33,9 +38,9 @@ public class AuthController {
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 		try {
 			authService.registerUser(signUpRequest);
-			return ResponseEntity.status(201).build();
+			return ResponseEntity.status(HttpStatus.CREATED).build();
 		} catch (RuntimeException e) {
-			return ResponseEntity.badRequest().build();
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
 	}
 
@@ -44,20 +49,21 @@ public class AuthController {
 		try {
 			return ResponseEntity.ok(authService.refreshJwtToken(request));
 		} catch (RuntimeException e) {
-			return ResponseEntity.status(403).build();
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 	}
 
 	
     @GetMapping("/admin/users")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<java.util.List<com.flightapp.user_service.model.User>> getAllUsers() {
+    public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(authService.getAllUsers());
     }
     
 	@PostMapping("/logout")
 	public ResponseEntity<?> logoutUser(HttpServletRequest request) {
-		return ResponseEntity.ok().build();
+		authService.logoutUser(request);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PostMapping("/admin/block-user")
@@ -66,7 +72,7 @@ public class AuthController {
 		try {
 			return ResponseEntity.ok(authService.blockUser(request.getUsername(), request.getBlock(), auth.getName()));
 		} catch (RuntimeException e) {
-			return ResponseEntity.badRequest().build();
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
 	}
 }

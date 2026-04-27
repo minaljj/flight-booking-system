@@ -5,7 +5,7 @@ import com.flightapp.user_service.service.UserDetailsServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,65 +25,60 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class WebSecurityConfig {
 
-	@Autowired
-	UserDetailsServiceImplementation userDetailsService;
+    @Autowired
+    UserDetailsServiceImplementation userDetailsService;
 
-	@Autowired
-	private RateLimitingFilter rateLimitingFilter;
+    @Bean
+    public AuthTokenFilter authenticationJwtTokenFilter() {
+        return new AuthTokenFilter();
+    }
 
-	@Autowired
-	private TokenBlacklistFilter tokenBlacklistFilter;
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
 
-	@Bean
-	public AuthTokenFilter authenticationJwtTokenFilter() {
-		return new AuthTokenFilter();
-	}
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
 
-	@Bean
-	public DaoAuthenticationProvider authenticationProvider() {
-		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-		authProvider.setUserDetailsService(userDetailsService);
-		authProvider.setPasswordEncoder(passwordEncoder());
-		return authProvider;
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-		return authConfig.getAuthenticationManager();
-	}
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        String hierarchy = "ROLE_ADMIN > ROLE_AIRLINE_MODERATOR \n ROLE_AIRLINE_MODERATOR > ROLE_USER";
+        roleHierarchy.setHierarchy(hierarchy);
+        return roleHierarchy;
+    }
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        // Public auth and documentation endpoints
+                        .requestMatchers("/api/v1.0/flight/auth/login",
+                                "/api/v1.0/flight/auth/register",
+                                "/api/v1.0/flight/auth/refresh",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**").permitAll()
+                        // Admin-only: users and role management
+                        .requestMatchers("/api/v1.0/flight/auth/admin/**")
+                        .hasRole("ADMIN")
+                        // Everything else requires authentication
+                        .anyRequest().authenticated());
 
-	@Bean
-	public RoleHierarchy roleHierarchy() {
-		RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-		String hierarchy = "ROLE_ADMIN > ROLE_AIRLINE_MODERATOR \n ROLE_AIRLINE_MODERATOR > ROLE_USER";
-		roleHierarchy.setHierarchy(hierarchy);
-		return roleHierarchy;
-	}
+        http.authenticationProvider(authenticationProvider());
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.disable())
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(auth -> auth
-						// Public auth and documentation endpoints
-						.requestMatchers("/api/v1.0/flight/auth/login", "/api/v1.0/flight/auth/register",
-								"/api/v1.0/flight/auth/refresh", "/swagger-ui/**", "/v3/api-docs/**")
-						.permitAll()
-						// Admin-only: role assignment
-						.requestMatchers(HttpMethod.POST, "/api/v1.0/flight/auth/admin/assign-role").hasRole("ADMIN")
-						// Everything else will require authentication
-						.anyRequest().authenticated());
-
-		http.authenticationProvider(authenticationProvider());
-		http.addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class);
-		http.addFilterBefore(tokenBlacklistFilter, UsernamePasswordAuthenticationFilter.class);
-		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
-		return http.build();
-	}
+        return http.build();
+    }
 }
