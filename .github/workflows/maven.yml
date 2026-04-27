@@ -27,7 +27,8 @@ jobs:
             directory: backend/services/notification-service
             type: node
           - service: frontend
-            directory: "."
+            # If your Vite app is in a folder named 'frontend', change "." to "frontend"
+            directory: "." 
             type: node
 
     defaults:
@@ -37,6 +38,11 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: List Files for Debugging
+        run: |
+          echo "Current working directory: $(pwd)"
+          ls -F
 
       # --- JAVA SECTION ---
       - name: Set up JDK 17
@@ -57,24 +63,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # We remove the automatic 'cache: npm' here to avoid lockfile errors
 
       - name: Cache Node Modules
         if: matrix.type == 'node'
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          # Use package.json for the hash key
           key: ${{ runner.os }}-node-${{ hashFiles(format('{0}/package.json', matrix.directory)) }}
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install Dependencies
+      - name: Install & Build Node
         if: matrix.type == 'node'
         run: |
-          # Use 'npm install' because 'npm ci' REQUIRES a package-lock.json
-          npm install
-
-      - name: Build Node Project
-        if: matrix.type == 'node'
-        run: npm run build --if-present
+          # Double check if package.json exists before running npm
+          if [ -f "package.json" ]; then
+            npm install
+            npm run build --if-present
+          else
+            echo "Error: package.json not found in $(pwd)"
+            exit 1
+          fi
