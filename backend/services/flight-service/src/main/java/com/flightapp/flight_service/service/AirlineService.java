@@ -1,9 +1,12 @@
 package com.flightapp.flight_service.service;
 
-import com.flightapp.flight_service.model.Airline;
-import com.flightapp.flight_service.repository.AirlineRepository;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.flightapp.flight_service.model.Airline;
+import com.flightapp.flight_service.repository.AirlineRepository;
 
 @Service
 public class AirlineService {
@@ -21,12 +24,23 @@ public class AirlineService {
         return airlineRepository.save(airline);
     }
 
-    public Airline blockAirline(String name) {
+    public Airline blockAirline(long id) {
 
-        Airline airline = airlineRepository.findByName(name)
+        Airline airline = airlineRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Airline not found"));
 
         airline.setBlocked(true);
+
         return airlineRepository.save(airline);
+    }
+
+    public void blockAirline(String name) {
+        Optional<Airline> airlineOpt = airlineRepository.findByName(name);
+        if (airlineOpt.isEmpty()) {
+            throw new RuntimeException("Airline not found");
+        }
+        Airline airline = airlineOpt.get();
+        airline.setBlocked(true);
+        airlineRepository.save(airline);
     }
 }

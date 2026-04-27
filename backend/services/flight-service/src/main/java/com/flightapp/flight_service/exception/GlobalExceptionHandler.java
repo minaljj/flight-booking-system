@@ -29,7 +29,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
     public Map<String, String> handleNotFound(org.springframework.web.server.ResponseStatusException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getReason());
+        error.put("message",ex.getReason());
+        return error;
+    }
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public Map<String, String> handleIllegalArgument(IllegalArgumentException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("message", ex.getMessage());
         return error;
     }
 }

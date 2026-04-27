@@ -3,6 +3,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,7 @@ public class FlightController {
     @Autowired
     private FlightService flightService;
     @PostMapping("/airline/inventory")
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'AIRLINE_MODERATOR')")
     public ResponseEntity<Long> addInventory(@Valid @RequestBody Flight flight) {
         Flight savedFlight = flightService.addInventory(flight);
         return ResponseEntity.status(201).body(savedFlight.getId());   
