@@ -27,8 +27,8 @@ jobs:
             directory: backend/services/notification-service
             type: node
           - service: frontend
-            # If your Vite app is in a folder named 'frontend', change "." to "frontend"
-            directory: "." 
+            # This matches the folder inside your repo
+            directory: frontend 
             type: node
 
     defaults:
@@ -38,11 +38,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: List Files for Debugging
-        run: |
-          echo "Current working directory: $(pwd)"
-          ls -F
 
       # --- JAVA SECTION ---
       - name: Set up JDK 17
@@ -76,11 +71,6 @@ jobs:
       - name: Install & Build Node
         if: matrix.type == 'node'
         run: |
-          # Double check if package.json exists before running npm
-          if [ -f "package.json" ]; then
-            npm install
-            npm run build --if-present
-          else
-            echo "Error: package.json not found in $(pwd)"
-            exit 1
-          fi
+          # Use npm install (standard) because you don't have a lockfile
+          npm install
+          npm run build --if-present
