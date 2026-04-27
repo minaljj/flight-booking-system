@@ -18,15 +18,17 @@ import jakarta.validation.Valid;
 public class AirlineController {
     @Autowired
     private AirlineService airlineService;
+    public static final String ADMIN = "hasRole('ADMIN')";
+   
     @PostMapping("/airline")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(ADMIN)
     public ResponseEntity<Long> registerAirline(@Valid @RequestBody Airline airline) {
         airlineService.registerAirline(airline);
 		return ResponseEntity.status(201).body(airline.getId());
     }
 
     @DeleteMapping("/airline/block/{name}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(ADMIN)
     public ResponseEntity<?> blockAirline(@PathVariable String name) {
         try {
             airlineService.blockAirline(name);

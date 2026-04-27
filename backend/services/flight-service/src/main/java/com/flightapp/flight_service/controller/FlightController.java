@@ -22,10 +22,11 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1.0/flight")
 public class FlightController {
+    public static final String ROLE = "hasAnyRole('ADMIN', 'AIRLINE_MODERATOR')";
     @Autowired
     private FlightService flightService;
     @PostMapping("/airline/inventory")
-    @PreAuthorize("hasAnyRole('ADMIN', 'AIRLINE_MODERATOR')")
+    @PreAuthorize(ROLE)
     public ResponseEntity<Long> addInventory(@Valid @RequestBody Flight flight) {
         Flight savedFlight = flightService.addInventory(flight);
         return ResponseEntity.status(201).body(savedFlight.getId());   
