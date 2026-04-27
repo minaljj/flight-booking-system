@@ -35,7 +35,6 @@ jobs:
             directory: "."
             type: node
 
-    # Sets the execution context to the specific service folder
     defaults:
       run:
         working-directory: ${{ matrix.directory }}
@@ -64,7 +63,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          # Crucial: This points to the lockfile relative to the repo root
+          # Use the directory from matrix to find the specific lockfile
           cache-dependency-path: ${{ matrix.directory }}/package-lock.json
 
       - name: Install Dependencies
