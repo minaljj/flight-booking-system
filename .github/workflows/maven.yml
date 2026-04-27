@@ -1,42 +1,76 @@
-name: Backend CI
-
-
+name: Full Stack CI
 
 on:
- push:
-   branches: [ "main", "develop", "feature/*" ]
- pull_request:
-   branches: [ "main", "develop" ]
-
-
+  push:
+    branches: [ "main", "dev", "feature/**" ]
+  pull_request:
+    branches: [ "main", "dev" ]
 
 jobs:
- build-booking-service:
-   runs-on: ubuntu-latest
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: flight-service
+            directory: backend/services/flight-service
+            type: java
+          - service: user-service
+            directory: backend/services/user-service
+            type: java
+          - service: booking-service
+            directory: backend/services/booking-service
+            type: java
+          - service: notification-service
+            directory: backend/services/notification-service
+            type: node
+          - service: frontend
+            # This matches the folder inside your repo
+            directory: frontend 
+            type: node
 
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
 
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-   defaults:
-     run:
-       working-directory: backend/booking-service
+      # --- JAVA SECTION ---
+      - name: Set up JDK 17
+        if: matrix.type == 'java'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
 
+      - name: Build Java with Maven
+        if: matrix.type == 'java'
+        run: mvn -B clean install
 
+      # --- NODE.JS SECTION ---
+      - name: Set up Node.js
+        if: matrix.type == 'node'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-   steps:
-     - name: Checkout code
-       uses: actions/checkout@v4
+      - name: Cache Node Modules
+        if: matrix.type == 'node'
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles(format('{0}/package.json', matrix.directory)) }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
-
-
-     - name: Set up Java 17
-       uses: actions/setup-java@v4
-       with:
-         distribution: 'temurin'
-         java-version: '17'
-
-
-
-     - name: Build with Maven
-       run: mvn clean install
-
-
+      - name: Install & Build Node
+        if: matrix.type == 'node'
+        run: |
+          # Use npm install (standard) because you don't have a lockfile
+          npm install
+          npm run build --if-present
