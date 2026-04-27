@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import lombok.Data;
 
 @Configuration
-@ConfigurationProperties(prefix="app.auth")
+@ConfigurationProperties(prefix = "app.auth")
 @Data
 public class PasswordProperties {
 	private String passwordRegex;
