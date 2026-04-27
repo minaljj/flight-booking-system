@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Java Services
+          # --- Java Services ---
           - service: flight-service
             directory: backend/services/flight-service
             type: java
@@ -24,15 +24,18 @@ jobs:
           - service: booking-service
             directory: backend/services/booking-service
             type: java
-          # Node.js Service
+            
+          # --- Node.js Services ---
           - service: notification-service
             directory: backend/services/notification-service
             type: node
-          # Frontend (Vite)
+            
+          # --- Frontend (Vite at Root) ---
           - service: frontend
-            directory: .
+            directory: "."
             type: node
 
+    # Sets the execution context to the specific service folder
     defaults:
       run:
         working-directory: ${{ matrix.directory }}
@@ -41,7 +44,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # --- JAVA SETUP ---
+      # --- JAVA SECTION ---
       - name: Set up JDK 17
         if: matrix.type == 'java'
         uses: actions/setup-java@v4
@@ -54,18 +57,20 @@ jobs:
         if: matrix.type == 'java'
         run: mvn -B clean install
 
-      # --- NODE SETUP (Notification & Frontend) ---
+      # --- NODE.JS SECTION (Frontend & Notification) ---
       - name: Set up Node.js
         if: matrix.type == 'node'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-          # Tells action where package-lock.json is located
+          # Crucial: This points to the lockfile relative to the repo root
           cache-dependency-path: ${{ matrix.directory }}/package-lock.json
 
-      - name: Install & Build Node Project
+      - name: Install Dependencies
         if: matrix.type == 'node'
-        run: |
-          npm ci
-          npm run build --if-present
+        run: npm ci
+
+      - name: Build Node Project
+        if: matrix.type == 'node'
+        run: npm run build --if-present
