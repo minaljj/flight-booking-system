@@ -14,7 +14,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # --- Java Services ---
           - service: flight-service
             directory: backend/services/flight-service
             type: java
@@ -24,13 +23,9 @@ jobs:
           - service: booking-service
             directory: backend/services/booking-service
             type: java
-            
-          # --- Node.js Services ---
           - service: notification-service
             directory: backend/services/notification-service
             type: node
-            
-          # --- Frontend (Vite at Root) ---
           - service: frontend
             directory: "."
             type: node
@@ -56,19 +51,29 @@ jobs:
         if: matrix.type == 'java'
         run: mvn -B clean install
 
-      # --- NODE.JS SECTION (Frontend & Notification) ---
+      # --- NODE.JS SECTION ---
       - name: Set up Node.js
         if: matrix.type == 'node'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          # Use the directory from matrix to find the specific lockfile
-          cache-dependency-path: ${{ matrix.directory }}/package-lock.json
+          # We remove the automatic 'cache: npm' here to avoid lockfile errors
+
+      - name: Cache Node Modules
+        if: matrix.type == 'node'
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          # Use package.json for the hash key
+          key: ${{ runner.os }}-node-${{ hashFiles(format('{0}/package.json', matrix.directory)) }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install Dependencies
         if: matrix.type == 'node'
-        run: npm ci
+        run: |
+          # Use 'npm install' because 'npm ci' REQUIRES a package-lock.json
+          npm install
 
       - name: Build Node Project
         if: matrix.type == 'node'
