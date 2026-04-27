@@ -1,4 +1,4 @@
-name: Backend CI
+name: Full Stack CI
 
 on:
   push:
@@ -11,28 +11,66 @@ jobs:
     runs-on: ubuntu-latest
     
     strategy:
-      # Set fail-fast to false so one service failing doesn't stop the others
       fail-fast: false
       matrix:
-        service: [flight-service, user-service, booking-service]
+        include:
+          - service: flight-service
+            directory: backend/services/flight-service
+            type: java
+          - service: user-service
+            directory: backend/services/user-service
+            type: java
+          - service: booking-service
+            directory: backend/services/booking-service
+            type: java
+          - service: notification-service
+            directory: backend/services/notification-service
+            type: node
+          - service: frontend
+            # This matches the folder inside your repo
+            directory: frontend 
+            type: node
 
     defaults:
       run:
-        working-directory: backend/services/${{ matrix.service }}
+        working-directory: ${{ matrix.directory }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # --- JAVA SECTION ---
       - name: Set up JDK 17
+        if: matrix.type == 'java'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-          # Optional: path to pom if cache fails to initialize
-          # build-path: backend/${{ matrix.service }}
 
-      - name: Build with Maven
-        # Adding -B (Batch mode) is best practice for CI to reduce log noise
+      - name: Build Java with Maven
+        if: matrix.type == 'java'
         run: mvn -B clean install
+
+      # --- NODE.JS SECTION ---
+      - name: Set up Node.js
+        if: matrix.type == 'node'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache Node Modules
+        if: matrix.type == 'node'
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles(format('{0}/package.json', matrix.directory)) }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install & Build Node
+        if: matrix.type == 'node'
+        run: |
+          # Use npm install (standard) because you don't have a lockfile
+          npm install
+          npm run build --if-present

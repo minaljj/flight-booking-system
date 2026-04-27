@@ -18,6 +18,8 @@ import lombok.NoArgsConstructor;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "users", uniqueConstraints = { @UniqueConstraint(columnNames = "username"),
 		@UniqueConstraint(columnNames = "email") })
@@ -38,9 +40,9 @@ public class User {
 	private String email;
 
 	@Column(nullable = false)
+	@JsonIgnore
 	private String password;
 
-	private String provider; // e.g., local, google
 
 	@Builder.Default
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -54,6 +56,5 @@ public class User {
 		this.username = username;
 		this.email = email;
 		this.password = password;
-		this.provider = "local";
 	}
 }
