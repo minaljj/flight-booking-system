@@ -51,9 +51,7 @@ public class Flight {
 	@NotNull
 	@Min(value=5,message="Minimum 5 rows required")
 	private Integer numberOfRows;
-	@NotNull
-	@Min(value=3,message="Minimum 3 columns required")
-    private Integer numberOfColumns;
+    private Integer numberOfColumns = (totalBusinessSeats+totalNonBusinessSeats)/numberOfRows;
 	@NotNull
 	@Min(value = 1, message = "Ticket cost must be greater than 0")
 	private Double ticketCost;
