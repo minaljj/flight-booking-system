@@ -43,7 +43,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             maxRequests = authMaxRequests;
             windowSeconds = 60; // 1 minute
             keyPrefix = "auth:";
-        } else if (uri.contains("/search/")) {
+        } else if (uri.contains("/search")) {
             maxRequests = searchMaxRequests;
             windowSeconds = 1; // 1 second
             keyPrefix = "search:";
