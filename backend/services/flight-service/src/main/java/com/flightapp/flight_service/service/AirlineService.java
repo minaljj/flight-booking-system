@@ -1,5 +1,6 @@
 package com.flightapp.flight_service.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,4 +35,11 @@ public class AirlineService {
         airline.setBlocked(true);
         airlineRepository.save(airline);
     }
+
+
+	public List<Airline> getAllAirlines()
+	{
+		return airlineRepository.findAll();
+	}
+	
 }
