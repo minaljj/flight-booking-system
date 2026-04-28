@@ -24,15 +24,6 @@ public class AirlineService {
         return airlineRepository.save(airline);
     }
 
-    public Airline blockAirline(long id) {
-
-        Airline airline = airlineRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Airline not found"));
-
-        airline.setBlocked(true);
-
-        return airlineRepository.save(airline);
-    }
 
     public void blockAirline(String name) {
         Optional<Airline> airlineOpt = airlineRepository.findByName(name);
