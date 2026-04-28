@@ -1,48 +1,12 @@
-server:
-  port: 8080
-  error:
-    include-stacktrace: never
-    include-message: never
-    include-binding-errors: never
-
 spring:
   application:
     name: api-gateway
-  main:
-    allow-bean-definition-overriding: true
+  config:
+    import: "configserver:${CONFIG_SERVER_URL:http://localhost:8888/}"
   cloud:
-    gateway:
-      mvc:
-        routes:
-          - id: user-service
-            uri: ${USER_SERVICE_URL:http://localhost:8081}
-            predicates:
-              - Path=/api/v1.0/flight/auth/**
-          - id: booking-service
-            uri: ${BOOKING_SERVICE_URL:http://localhost:8084}
-            predicates:
-              - Path=/api/v1.0/flight/booking/**
-          - id: flight-service
-            uri: ${FLIGHT_SERVICE_URL:http://localhost:8083}
-            predicates:
-              - Path=/api/v1.0/flight/**
+    config:
+      fail-fast: true
+      retry:
+        initial-interval: 2000
+        max-attempts: 5
 
-jwt:
-  secret: ${JWT_SECRET:FlightAppSecretKey12345FlightAppSecretKey12345FlightAppSecretKey12345}
-
-redis:
-  host: ${REDIS_HOST:localhost}
-  port: ${REDIS_PORT:6379}
-
-app:
-  rate-limit:
-    auth:
-      max-requests: 10
-    search:
-      max-requests: 60
-
-logging:
-  level:
-    org.springframework.web: DEBUG
-    org.springframework.cloud.gateway: DEBUG
-    com.flightapp.apigateway: DEBUG
