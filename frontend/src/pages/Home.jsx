@@ -49,44 +49,43 @@ export default function Home() {
           className="mx-auto max-w-3xl"
         >
           <Card className="p-6 bg-white border border-slate-100 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.08)] rounded-[2rem]">
-            <div className="flex flex-col gap-5">
-              <div className="flex gap-1 p-1 bg-slate-50 border border-slate-100 rounded-xl w-fit self-center">
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-1 p-1 bg-slate-50 border border-slate-100 rounded-xl w-fit">
                 <Button
                   variant={tripType === 'one-way' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setTripType('one-way')}
                   className={cn(
-                    "rounded-xl px-6 font-bold transition-all",
+                    "rounded-xl px-4 font-bold transition-all",
                     tripType === 'one-way' ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-500"
-                  )}
-                >
-                  One Way
-                </Button>
+                  )} > One Way</Button>
                 <Button
                   variant={tripType === 'round-trip' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setTripType('round-trip')}
                   className={cn(
-                    "rounded-xl px-6 font-bold transition-all",
+                    "rounded-xl px-4 font-bold transition-all",
                     tripType === 'round-trip' ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" : "text-slate-500"
-                  )}
+                  )}> Round Trip</Button>
+              </div>
+
+              <div className="flex flex-col md:flex-row gap-3 text-left items-end">
+                <div className="flex-1 w-full">
+                  <SearchField label="From" icon={PlaneTakeoff} placeholder="New Delhi (DEL)" value={from} onChange={setFrom} />
+                </div>
+                <div className="flex-1 w-full">
+                  <SearchField label="To" icon={PlaneLanding} placeholder="Bangalore (BLR)" value={to} onChange={setTo} />
+                </div>
+                <div className="flex-1 w-full">
+                  <SearchField label="Travel Date" icon={Calendar} type="date" value={date} onChange={setDate} />
+                </div>
+                <Button
+                  onClick={handleSearch}
+                  className="w-full md:w-auto h-12 px-8 bg-blue-600 hover:bg-blue-700 text-base font-black text-white rounded-xl shadow-xl shadow-blue-500/30 group transition-all shrink-0"
                 >
-                  Round Trip
+                  Search Flights <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
-
-              <div className="grid grid-cols-1 gap-3 text-left">
-                <SearchField label="From" icon={PlaneTakeoff} placeholder="New Delhi (DEL)" value={from} onChange={setFrom} />
-                <SearchField label="To" icon={PlaneLanding} placeholder="Bangalore (BLR)" value={to} onChange={setTo} />
-                <SearchField label="Travel Date" icon={Calendar} type="date" value={date} onChange={setDate} />
-              </div>
-
-              <Button
-                onClick={handleSearch}
-                className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-lg font-black text-white rounded-xl shadow-xl shadow-blue-500/30 group transition-all"
-              >
-                Find Best Flights <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-              </Button>
             </div>
           </Card>
         </motion.div>

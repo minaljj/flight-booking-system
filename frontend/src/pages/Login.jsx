@@ -35,7 +35,6 @@ export default function Login() {
   return (
     <div className="h-[calc(100vh-64px)] overflow-hidden flex items-center justify-center p-4 bg-white">
       <div className="w-full max-w-[440px] relative">
-        {/* Abstract Background Decoration */}
         <div className="absolute -top-12 -left-12 w-64 h-64 bg-blue-600/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
         
@@ -47,10 +46,12 @@ export default function Login() {
              </div>
              <CardTitle className="text-2xl font-black tracking-tighter text-slate-900">Secure Access</CardTitle>
           </CardHeader>
+
           <CardContent className="px-6 pb-6">
             <form onSubmit={handleLogin} className="space-y-3">
               <div className="space-y-1">
-                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Username</Label>
+                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">
+                  Username</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <Input 
@@ -58,9 +59,9 @@ export default function Login() {
                     className="pl-9 h-10 text-sm bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-blue-600/10 placeholder:text-slate-200 transition-all" 
                     placeholder="admin or user"
                     value={username}
-                    onChange={e => setUsername(e.target.value)}
-                  />
+                    onChange={e => setUsername(e.target.value)}/>
                 </div>
+
               </div>
               <div className="space-y-1">
                 <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Password</Label>
@@ -75,12 +76,12 @@ export default function Login() {
                     onChange={e => setPassword(e.target.value)}
                   />
                 </div>
+
               </div>
               <Button 
                 type="submit" 
                 disabled={loading}
-                className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-sm font-black text-white rounded-xl shadow-xl shadow-blue-500/20 active:scale-95 transition-all mt-2"
-              >
+                className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-sm font-black text-white rounded-xl shadow-xl shadow-blue-500/20 active:scale-95 transition-all mt-2">
                 {loading ? 'Authenticating...' : 'Sign In'}
               </Button>
 

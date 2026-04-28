@@ -1,8 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
+import SearchResults from './pages/SearchResults'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import AdminDashboard from './pages/AdminDashboard'
+import ManageAirlines from './pages/ManageAirlines'
+import FlightInventory from './pages/FlightInventory'
 
 function RootRedirect() {
   const userStr = localStorage.getItem('user');
@@ -23,8 +27,13 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<RootRedirect />} />
+            <Route path="/search" element={<SearchResults />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+        
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/airlines" element={<ManageAirlines />} />
+            <Route path="/admin/inventory" element={<FlightInventory />} />
             
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
