@@ -1,14 +1,16 @@
 package com.flightapp.flight_service.security;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -56,5 +58,24 @@ class JwtUtilsTest {
 	{
 		boolean result=jwtUtils.validateJwtToken(token);
 		assertTrue(result);
+	}
+	@Test
+	void testValidateJwtTokenInvalid()
+	{
+		boolean result=jwtUtils.validateJwtToken("wrong.token.value");
+		assertFalse(result);
+	}
+	@Test
+	void testValidateJwtTokenExpired()
+	{
+		String expiredToken = Jwts.builder()
+                .subject("testuser")
+                .claim("roles", List.of("ROLE_ADMIN"))
+                .issuedAt(new Date(System.currentTimeMillis() - 120000))
+                .expiration(new Date(System.currentTimeMillis() - 60000))
+                .signWith(key)
+                .compact();
+        boolean result = jwtUtils.validateJwtToken(expiredToken);
+        assertFalse(result);
 	}
 }
