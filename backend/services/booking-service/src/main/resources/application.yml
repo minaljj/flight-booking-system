@@ -1,14 +1,16 @@
 server:
-  port: 8084
+  port: 8083
 
 spring:
   application:
     name: booking-service
+
   datasource:
-    url: jdbc:mysql://localhost:3306/flight_db?createDatabaseIfNotExist=true
-    username: root
-    password: root
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/flight_db?createDatabaseIfNotExist=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:Welcome@123}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -16,3 +18,47 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+jwt:
+  secret: ${JWT_SECRET:FlightAppSecretKey12345FlightAppSecretKey12345FlightAppSecretKey12345}
+
+flight:
+  service:
+    url: ${FLIGHT_SERVICE_URL:http://localhost:8083/api/v1.0/flight/}
+
+notification:
+  service:
+    url: ${NOTIFICATION_SERVICE_URL:http://localhost:8086/api/v1.0/notification/send}
+
+---
+# LOCAL PROFILE
+spring:
+  config:
+    activate:
+      on-profile: local
+
+external:
+  flight-service-enabled: false
+  notification-service-enabled: false
+
+security:
+  enabled: false
+
+---
+# INTEGRATION
+spring:
+  config:
+    activate:
+      on-profile: integration
+
+external:
+  flight-service-enabled: true
+  notification-service-enabled: true
+
+security:
+  enabled: true
