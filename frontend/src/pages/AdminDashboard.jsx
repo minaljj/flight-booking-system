@@ -40,13 +40,6 @@ function AdminDashboard() {
            accent="indigo"
         />
         <ModuleCard 
-           to="/admin/bookings" 
-           title="All Bookings" 
-           desc="Oversee all system-wide reservations, verify PNRs, and manage traveler logs."
-           icon={Ticket}
-           accent="violet"
-        />
-        <ModuleCard 
            to="/admin/users" 
            title="Manage Users" 
            desc="Monitor system access, block suspicious accounts, and manage security roles."
@@ -56,19 +49,6 @@ function AdminDashboard() {
       </div>
     </div>
   );
-}
-
-function StatCard({ icon: Icon, label, val, color, bg }) {
-   return (
-      <Card className="p-4 border-slate-100 bg-white shadow-xl shadow-slate-200/20 rounded-3xl relative overflow-hidden group">
-         <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-inner", bg)}>
-            <Icon className={cn("w-7 h-7", color)} />
-         </div>
-         <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{label}</p>
-         <p className="text-4xl font-black text-slate-900 tracking-tighter">{val}</p>
-         <div className="absolute top-0 right-0 h-full w-24 bg-gradient-to-l from-slate-50/50 to-transparent skew-x-[-20deg] translate-x-12 opacity-0 group-hover:opacity-100 transition-opacity" />
-      </Card>
-   );
 }
 
 function ModuleCard({ to, title, desc, icon: Icon, accent }) {

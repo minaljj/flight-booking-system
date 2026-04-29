@@ -120,24 +120,31 @@ function FlightInventory() {
                         <FormGroup label="Arrival">
                            <Input type="datetime-local" className="h-14 bg-slate-50 border-slate-100 rounded-2xl font-bold text-slate-900" onChange={e => setNewFlight({ ...newFlight, endDateTime: e.target.value })} />
                         </FormGroup>
+                        <FormGroup label="Scheduled Days">
+                           <Select
+                           defaultValue=""
+                           onValueChange={(v) => setNewFlight({ ...newFlight, scheduledDays: v })}
+                           className="h-14 bg-slate-50 border-slate-100 rounded-2xl font-bold text-slate-900">
+                              <SelectItem value="DAILY">Daily</SelectItem>
+                              <SelectItem value="MON-FRI">Mon-Fri</SelectItem>
+                              <SelectItem value="WEEKEND">Weekend</SelectItem>
+                              </Select>
+                              </FormGroup>
                      </div>
+
 
                      <div className="space-y-8">
                         <SectionLabel title="Cabin Configuration" />
                         <div className="grid grid-cols-2 gap-4">
                            <FormGroup label="Bussiness Seats">
                               <Input type="number" step="1" min="0" className="h-14 bg-slate-50 border-slate-100 rounded-2xl font-bold text-slate-900" placeholder="20" 
-                                onKeyDown={e => {
-                                 if (e.key === '.' || e.key === 'e' || e.key === '-') {
-                                 e.preventDefault(); }
-                              }}
                               onChange={e => setNewFlight({ ...newFlight, totalBusinessSeats: parseInt(e.target.value) })} />
                            </FormGroup>
                            <FormGroup label="Non Bussiness Seats">
                               <Input type="number" step="1" min="0" className="h-14 bg-slate-50 border-slate-100 rounded-2xl font-bold text-slate-900" placeholder="100"
                                 onKeyDown={e => {
                                  if (e.key === '.' || e.key === 'e' || e.key === '-') {
-                                 e.preventDefault(); }
+                                    e.preventDefault(); }
                               }}
                                onChange={e => setNewFlight({ ...newFlight, totalNonBusinessSeats: parseInt(e.target.value) })} />
                            </FormGroup>
