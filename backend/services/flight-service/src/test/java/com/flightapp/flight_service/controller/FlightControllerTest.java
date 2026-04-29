@@ -1,9 +1,13 @@
 package com.flightapp.flight_service.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.time.LocalDateTime;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,8 +16,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.flightapp.flight_service.dto.FlightSearchRequest;
 import com.flightapp.flight_service.model.Flight;
 import com.flightapp.flight_service.model.MealType;
 import com.flightapp.flight_service.service.FlightService;
@@ -69,5 +75,31 @@ class FlightControllerTest {
                 .content(objectMapper.writeValueAsString(flight)))
                 .andExpect(status().isCreated());
     }
+    @Test
+    void testSearchFlights() throws Exception
+    {
+    	FlightSearchRequest request =new FlightSearchRequest();
+    	request.setFrom("Bangalore");
+    	request.setTo("Hyderabad");
+    	request.setDate("2026-07-28");
+    	when(flightService.searchFlights(any(FlightSearchRequest.class))).thenReturn(List.of(flight));
+    }
+    @Test
+    void testGetFlight() throws Exception
+    {
+    	when(flightService.getFlightById(1L)).thenReturn(flight);
+    	mockMvc.perform(get("/api/v1.0/flight/1")).andExpect(status().isOk());
+    	
+    }
+    @Test
+    void testGetFlightNotFound()throws Exception
+    {
+    	when(flightService.getFlightById(2L)).thenReturn(null);
+    	mockMvc.perform(get("/api/v1.0/flight/2")).andExpect(status().isNotFound());
+    }
+    
+  
+   
+    
 
 }

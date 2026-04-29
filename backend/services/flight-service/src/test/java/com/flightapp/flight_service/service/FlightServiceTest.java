@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.eq;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,5 +111,39 @@ class FlightServiceTest {
 			assertEquals("VI345",result.get(0).getFlightNumber());
 			
 	}
-	
+	@Test
+	void testGetFlightById() {
+	    
+	    when(flightRepository.findById(1L))
+	            .thenReturn(Optional.of(flight));
+
+	    Flight result = flightService.getFlightById(1L);
+
+	    assertNotNull(result);
+	    assertEquals("VI345", result.getFlightNumber());
+
+	    verify(flightRepository).findById(1L);
+	}
+	@Test
+	void testGetFlightByIdNotFound()
+	{
+		when(flightRepository.findById(2L)).thenReturn(Optional.empty());
+		Flight result=flightService.getFlightById(2L);
+		assertEquals(null,result);
+		verify(flightRepository).findById(2L);
+	}
+	@Test
+	void testSearchFlightsSameFromandTo() throws Exception
+	{
+		FlightSearchRequest request=new FlightSearchRequest();
+		request.setFrom("Hyderabad");
+		request.setTo("Hyderabad");
+		request.setDate("2026-05-14");
+		assertThrows(IllegalArgumentException.class,()->
+		{
+		flightService.searchFlights(request);
+		});
+		verify(flightRepository,never()).findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetween(any(), any(),any(), any());
+		
+	}
 }
