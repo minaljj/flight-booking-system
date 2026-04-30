@@ -8,7 +8,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -72,5 +74,34 @@ class AirlineServiceTest {
 
         verify(airlineRepository, times(1)).findByName("Vistara");
         verify(airlineRepository, never()).save(Mockito.any(Airline.class));
+    }
+    @Test
+    void testBlockAirlineSuccess() {
+
+        when(airlineRepository.findByName("Vistara"))
+                .thenReturn(Optional.of(airline));
+        airlineService.blockAirline("Vistara");
+        assertEquals(true, airline.isBlocked());
+        verify(airlineRepository).findByName("Vistara");
+        verify(airlineRepository).save(airline);
+    }
+    @Test
+    void testBlockAirlineNotFound() {
+        when(airlineRepository.findByName("Vistara"))
+                .thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, () -> {
+            airlineService.blockAirline("Vistara");
+        });
+        verify(airlineRepository).findByName("Vistara");
+        verify(airlineRepository, never()).save(any(Airline.class));
+    }
+    @Test
+    void testGetAllAirlines() {
+        when(airlineRepository.findAll())
+                .thenReturn(List.of(airline));
+        List<Airline> result = airlineService.getAllAirlines();
+        assertEquals(1, result.size());
+        assertEquals("Vistara", result.get(0).getName());
+        verify(airlineRepository).findAll();
     }
   }

@@ -78,4 +78,19 @@ class JwtUtilsTest {
         boolean result = jwtUtils.validateJwtToken(expiredToken);
         assertFalse(result);
 	}
+	@Test
+	void testValidateJwtTokenEmptyToken() {
+		
+	    boolean result = jwtUtils.validateJwtToken("");
+	    assertFalse(result);
+	}
+	@Test
+	void testValidateJwtTokenUnsupportedToken() {
+
+	    String unsupportedToken = "eyJhbGciOiJub25lIn0.eyJzdWIiOiJwcmVldGhpIn0.";
+
+	    boolean result = jwtUtils.validateJwtToken(unsupportedToken);
+
+	    assertFalse(result);
+	}
 }

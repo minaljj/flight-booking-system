@@ -83,6 +83,10 @@ class FlightControllerTest {
     	request.setTo("Hyderabad");
     	request.setDate("2026-07-28");
     	when(flightService.searchFlights(any(FlightSearchRequest.class))).thenReturn(List.of(flight));
+    	mockMvc.perform(post("/api/v1.0/flight/search")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
     }
     @Test
     void testGetFlight() throws Exception
@@ -97,6 +101,7 @@ class FlightControllerTest {
     	when(flightService.getFlightById(2L)).thenReturn(null);
     	mockMvc.perform(get("/api/v1.0/flight/2")).andExpect(status().isNotFound());
     }
+    
     
   
    

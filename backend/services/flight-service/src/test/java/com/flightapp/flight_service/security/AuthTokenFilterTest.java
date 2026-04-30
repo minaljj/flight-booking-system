@@ -60,4 +60,29 @@ class AuthTokenFilterTest {
 
 	}
 
+	@Test
+	void testAuthorizationHeaderWithoutBearer() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.addHeader("Authorization", "validtoken");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		MockFilterChain filterChain = new MockFilterChain();
+		authTokenFilter.doFilterInternal(request, response, filterChain);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		assertEquals(null, authentication);
+		verify(jwtUtils, never()).validateJwtToken(anyString());
+	}
+
+	@Test
+	void testExceptionWhileReadingToken() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.addHeader("Authorization", "Bearer validtoken");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		MockFilterChain filterChain = new MockFilterChain();
+		when(jwtUtils.validateJwtToken("validtoken")).thenReturn(true);
+		when(jwtUtils.getUserNameFromJwtToken("validtoken")).thenThrow(new RuntimeException("error"));
+		authTokenFilter.doFilterInternal(request, response, filterChain);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		assertEquals(null, authentication);
+	}
+
 }

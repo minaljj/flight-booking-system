@@ -67,6 +67,16 @@ class AirlineControllerTest {
 	    mockMvc.perform(delete("/api/v1.0/flight/airline/block/Indigo"))
 	            .andExpect(status().isOk());
 	}
+	@Test
+	void testBlockAirlineNotFound() throws Exception {
+
+	    org.mockito.Mockito.doThrow(new RuntimeException("Airline not found"))
+	            .when(airlineService)
+	            .blockAirline("Indigo");
+
+	    mockMvc.perform(delete("/api/v1.0/flight/airline/block/Indigo"))
+	            .andExpect(status().isBadRequest());
+	}
 	
 
 
