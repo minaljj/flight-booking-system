@@ -6,20 +6,31 @@ import { cn } from '@/lib/utils';
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
+  const [username, setUsername] = useState('');
   const location = useLocation();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
- 
-    const handleStorage = () => {
-      const u = localStorage.getItem('user');
-      setUser(u ? JSON.parse(u) : null);
+    const updateAuth = () => {
+      const storedUser = localStorage.getItem('user');
+      const user = storedUser ? JSON.parse(storedUser) : null;
+      setUser(user);
+
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          setUsername(payload.sub || user?.username || 'User');
+        } catch (error) {
+          setUsername(user?.username || 'User');
+        }
+      } else {
+        setUsername('');
+      }
     };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+
+    updateAuth();
+    window.addEventListener('storage', updateAuth);
+    return () => window.removeEventListener('storage', updateAuth);
   }, [location]);
 
   const logout = () => {
@@ -36,7 +47,7 @@ export default function Navbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2 group">
           <div className="bg-blue-600 p-1.5 rounded-lg rotate-3 group-hover:rotate-0 transition-transform shadow-lg shadow-blue-500/20">
-             <Plane className="h-5 w-5 text-white" />
+            <Plane className="h-5 w-5 text-white" />
           </div>
           <span className="text-xl font-black tracking-tighter text-slate-900 dark:text-white">FlightApp</span>
         </Link>
@@ -50,13 +61,13 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           {user ? (
             <div className="flex items-center gap-3">
-               <div className="hidden sm:flex flex-col items-end mr-2">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Authenticated</span>
-                  <span className="text-sm font-black text-slate-900 dark:text-white leading-none">{user.username}</span>
-               </div>
-               <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onClick={logout}>
-                 <LogOut className="h-5 w-5 text-slate-500" />
-               </Button>
+              <div className="hidden sm:flex flex-col items-end mr-2">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Authenticated</span>
+                <span className="text-sm font-black text-slate-900 dark:text-white leading-none">{username}</span>
+              </div>
+              <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onClick={logout}>
+                <LogOut className="h-5 w-5 text-slate-500" />
+              </Button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
@@ -80,12 +91,12 @@ export default function Navbar() {
 
 function NavLink({ to, children, active }) {
   return (
-    <Link 
-      to={to} 
+    <Link
+      to={to}
       className={cn(
         "text-sm font-bold transition-all relative py-1",
-        active 
-          ? "text-blue-600 dark:text-blue-400" 
+        active
+          ? "text-blue-600 dark:text-blue-400"
           : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
       )}
     >

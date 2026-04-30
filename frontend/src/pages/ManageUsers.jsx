@@ -17,14 +17,14 @@ function ManageUsers() {
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
-      const response = await api.get('/api/v1.0/flight/admin/user/list');
+      const response = await api.get('/api/v1.0/flight/auth/admin/users');
       return response.data;
     }
   });
 
   const blockMutation = useMutation({
     mutationFn: async ({ username, block }) => {
-      return api.post('/api/v1.0/flight/admin/block-user', { username, block });
+      return api.post('/api/v1.0/flight/auth/admin/block-user', { username, block });
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries(['admin-users']);
