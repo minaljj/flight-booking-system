@@ -105,7 +105,7 @@ function SearchField({ label, icon: Icon, placeholder, value, onChange, type = "
           className="pl-10 h-10 bg-slate-50 border-slate-100 rounded-xl focus:ring-2 focus:ring-blue-600/10 text-slate-900 font-bold placeholder:text-slate-300 transition-all text-sm"
           placeholder={placeholder}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(event) => onChange(event.target.value)}
         />
       </div>
     </div>

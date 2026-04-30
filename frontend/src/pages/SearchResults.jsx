@@ -6,10 +6,18 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Plane, Clock, ArrowRight, ShieldCheck } from 'lucide-react';
 import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 export default function SearchResults() {
   const location = useLocation();
   const { from: fromParam, to: toParam, date } = location.state || {};
+  const navigate = useNavigate();
+  
+  const handleBook = (flight) => {
+  navigate('/booking', {
+    state: { flight }
+  });
+};
 
   const { data: flights, isLoading } = useQuery({
     queryKey: ['flights', fromParam, toParam, date],
