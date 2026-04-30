@@ -68,10 +68,10 @@ function ManageAirlines() {
               <p className="text-blue-100/60 font-medium text-xs mt-1 uppercase tracking-widest">Enter official carrier documentation details</p>
            </div>
            <CardContent className="p-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-              <FormGroup label="Airline Name" value={newAirline.name} onChange={v => setNewAirline({...newAirline, name: v})} placeholder="Ex: IndiGo" />
-              <FormGroup label="Logo Source URL" value={newAirline.logo} onChange={v => setNewAirline({...newAirline, logo: v})} placeholder="https://..." />
-              <FormGroup label="Registry Contact" value={newAirline.contactNumber} onChange={v => setNewAirline({...newAirline, contactNumber: v})} placeholder="+1 555-0101" />
-              <FormGroup label="Carrier Address" value={newAirline.contactAddress} onChange={v => setNewAirline({...newAirline, contactAddress: v})} placeholder="HQ Location" />
+              <FormGroup label="Airline Name" value={newAirline.name} onChange={value => setNewAirline({...newAirline, name: value})} placeholder="Ex: IndiGo" />
+              <FormGroup label="Logo Source URL" value={newAirline.logo} onChange={value => setNewAirline({...newAirline, logo: value})} placeholder="https://..." />
+              <FormGroup label="Registry Contact" value={newAirline.contactNumber} onChange={value => setNewAirline({...newAirline, contactNumber: value})} placeholder="+1 555-0101" />
+              <FormGroup label="Carrier Address" value={newAirline.contactAddress} onChange={value => setNewAirline({...newAirline, contactAddress: value})} placeholder="HQ Location" />
               <div className="flex items-end">
                  <Button className="w-full h-14 bg-slate-900 text-white font-black rounded-2xl shadow-xl shadow-slate-950/20 active:scale-95 transition-all" onClick={() => addMutation.mutate(newAirline)}>
                     Add Airline
@@ -149,7 +149,7 @@ function FormGroup({ label, value, onChange, placeholder }) {
          className="h-14 bg-slate-50 border-slate-100 rounded-2xl font-bold text-slate-900 placeholder:text-slate-200" 
          placeholder={placeholder} 
          value={value}
-         onChange={e => onChange(e.target.value)}
+         onChange={event => onChange(event.target.value)}
        />
     </div>
   );

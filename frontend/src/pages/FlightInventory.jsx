@@ -115,10 +115,12 @@ function FlightInventory() {
                            </FormGroup>
                         </div>
                         <FormGroup label="Departure">
-                           <Input type="datetime-local" className="h-14 bg-slate-50 border-slate-100 rounded-2xl font-bold text-slate-900" onChange={e => setNewFlight({ ...newFlight, startDateTime: e.target.value })} />
+                           <Input type="datetime-local" className="h-14 bg-slate-50 border-slate-100 rounded-2xl font-bold text-slate-900" 
+                           onChange={event=> setNewFlight({ ...newFlight, startDateTime: event.target.value })} />
                         </FormGroup>
                         <FormGroup label="Arrival">
-                           <Input type="datetime-local" className="h-14 bg-slate-50 border-slate-100 rounded-2xl font-bold text-slate-900" onChange={e => setNewFlight({ ...newFlight, endDateTime: e.target.value })} />
+                           <Input type="datetime-local" className="h-14 bg-slate-50 border-slate-100 rounded-2xl font-bold text-slate-900"
+                            onChange={event => setNewFlight({ ...newFlight, endDateTime: event.target.value })} />
                         </FormGroup>
                         <FormGroup label="Scheduled Days">
                            <Select
@@ -138,24 +140,24 @@ function FlightInventory() {
                         <div className="grid grid-cols-2 gap-4">
                            <FormGroup label="Bussiness Seats">
                               <Input type="number" step="1" min="0" className="h-14 bg-slate-50 border-slate-100 rounded-2xl font-bold text-slate-900" placeholder="20" 
-                              onChange={e => setNewFlight({ ...newFlight, totalBusinessSeats: parseInt(e.target.value) })} />
+                              onChange={event => setNewFlight({ ...newFlight, totalBusinessSeats: parseInt(event.target.value) })} />
                            </FormGroup>
                            <FormGroup label="Non Bussiness Seats">
                               <Input type="number" step="1" min="0" className="h-14 bg-slate-50 border-slate-100 rounded-2xl font-bold text-slate-900" placeholder="100"
-                                onKeyDown={e => {
-                                 if (e.key === '.' || e.key === 'e' || e.key === '-') {
-                                    e.preventDefault(); }
+                                onKeyDown={event => {
+                                 if (event.key === '.' || event.key === 'e' || event.key === '-') {
+                                    event.preventDefault(); }
                               }}
-                               onChange={e => setNewFlight({ ...newFlight, totalNonBusinessSeats: parseInt(e.target.value) })} />
+                               onChange={event => setNewFlight({ ...newFlight, totalNonBusinessSeats: parseInt(event.target.value) })} />
                            </FormGroup>
                         </div>
 
                         <Input type="number" step="1" min="0" className="h-14 bg-slate-50 border-slate-100 rounded-2xl font-bold text-slate-900" placeholder="30 Rows"
-                          onKeyDown={e => {
-                           if (e.key === '.' || e.key === 'e' || e.key === '-') {
-                              e.preventDefault(); }
+                          onKeyDown={event => {
+                           if (event.key === '.' || event.key === 'e' || event.key === '-') {
+                              event.preventDefault(); }
                               }}
-                           onChange={e => setNewFlight({ ...newFlight, numberOfRows: parseInt(e.target.value) })} />
+                           onChange={event => setNewFlight({ ...newFlight, numberOfRows: parseInt(event.target.value) })} />
 
                         <FormGroup label="Meal Type">
                            <Select

@@ -55,7 +55,7 @@ const flight = selectedFlight || apiflight;
       phoneNumber: phone,
       meal: meal,
       noOfSeats: passengers.length,
-      passengers: passengers.map(p => ({ ...p, flightId: parseInt(id) }))
+      passengers: passengers.map(passenger => ({ ...passenger, flightId: parseInt(id) }))
     });
   };
 
@@ -109,16 +109,16 @@ const flight = selectedFlight || apiflight;
                     <CardContent className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                        <div className="space-y-2">
                          <Label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Full Name</Label>
-                         <Input required className="h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-900" placeholder="John Doe" value={p.name} onChange={e => updatePassenger(idx, 'name', e.target.value)} />
+                         <Input required className="h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-900" placeholder="John Doe" value={p.name} onChange={event => updatePassenger(idx, 'name', event.target.value)} />
                        </div>
                        <div className="space-y-2">
                          <Label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Age</Label>
-                         <Input required type="number" className="h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-900" placeholder="30" value={p.age} onChange={e => updatePassenger(idx, 'age', e.target.value)} />
+                         <Input required type="number" className="h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-900" placeholder="30" value={p.age} onChange={event => updatePassenger(idx, 'age', event.target.value)} />
                        </div>
                        <div className="space-y-2">
                          <Label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Gender</Label>
                          <div className="relative">
-                            <select className="flex h-12 w-full rounded-xl border border-slate-100 bg-slate-50 px-4 text-sm font-bold text-slate-900 focus:outline-none appearance-none cursor-pointer" value={p.gender} onChange={e => updatePassenger(idx, 'gender', e.target.value)}>
+                            <select className="flex h-12 w-full rounded-xl border border-slate-100 bg-slate-50 px-4 text-sm font-bold text-slate-900 focus:outline-none appearance-none cursor-pointer" value={p.gender} onChange={event => updatePassenger(idx, 'gender', event.target.value)}>
                                <option value="MALE">Male</option>
                                <option value="FEMALE">Female</option>
                                <option value="OTHER">Other</option>
@@ -128,7 +128,7 @@ const flight = selectedFlight || apiflight;
                        </div>
                        <div className="space-y-2">
                          <Label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Seat Number</Label>
-                         <Input required className="h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-900" placeholder="e.g. 12A" value={p.seatNumber} onChange={e => updatePassenger(idx, 'seatNumber', e.target.value.toUpperCase())} />
+                         <Input required className="h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-900" placeholder="e.g. 12A" value={p.seatNumber} onChange={event => updatePassenger(idx, 'seatNumber', event.target.value.toUpperCase())} />
                        </div>
                     </CardContent>
                 </Card>
@@ -147,15 +147,15 @@ const flight = selectedFlight || apiflight;
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                         <div className="space-y-2">
                            <Label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1 block">Confirmation Email</Label>
-                           <Input required type="email" className="h-14 bg-white border-slate-100 rounded-2xl text-slate-900 font-bold placeholder:text-slate-200 focus:ring-blue-600/10 transition-all" placeholder="traveler@example.com" value={email} onChange={e => setEmail(e.target.value)} />
+                           <Input required type="email" className="h-14 bg-white border-slate-100 rounded-2xl text-slate-900 font-bold placeholder:text-slate-200 focus:ring-blue-600/10 transition-all" placeholder="traveler@example.com" value={email} onChange={event => setEmail(event.target.value)} />
                         </div>
                         <div className="space-y-2">
                            <Label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1 block">Phone Number</Label>
-                           <Input required type="tel" pattern="^[6-9]\d{9}$" className="h-14 bg-white border-slate-100 rounded-2xl text-slate-900 font-bold placeholder:text-slate-200 focus:ring-blue-600/10 transition-all" placeholder="9876543210" value={phone} onChange={e => setPhone(e.target.value)} />
+                           <Input required type="tel" pattern="^[6-9]\d{9}$" className="h-14 bg-white border-slate-100 rounded-2xl text-slate-900 font-bold placeholder:text-slate-200 focus:ring-blue-600/10 transition-all" placeholder="9876543210" value={phone} onChange={event => setPhone(event.target.value)} />
                         </div>
                         <div className="space-y-2">
                            <Label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1 block">Meal Preference</Label>
-                           <select className="flex h-14 w-full rounded-2xl border border-slate-100 bg-white px-4 text-sm font-bold text-slate-900 focus:outline-none appearance-none cursor-pointer" value={meal} onChange={e => setMeal(e.target.value)}>
+                           <select className="flex h-14 w-full rounded-2xl border border-slate-100 bg-white px-4 text-sm font-bold text-slate-900 focus:outline-none appearance-none cursor-pointer" value={meal} onChange={event => setMeal(event.target.value)}>
                                <option value="NONE">No Special Meal</option>
                                <option value="VEG">Vegetarian</option>
                                <option value="NON_VEG">Non-Vegetarian</option>
