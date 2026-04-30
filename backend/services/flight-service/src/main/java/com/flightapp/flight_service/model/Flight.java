@@ -1,4 +1,5 @@
 package com.flightapp.flight_service.model;
+
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -42,16 +43,22 @@ public class Flight {
 	private String instrumentUsed;
 	@NotNull(message = "Total business seats is required")
 	@Min(value = 0, message = "Total business seats cannot be negative")
-	private Integer totalBusinessSeats;
+	private Integer totalBusinessSeats = 0;
 	@NotNull(message = "Total non-business seats is required")
-	@Min(value = 1, message = "Total non-business seats must be at least 1")
-	private Integer totalNonBusinessSeats;
+	@Min(value = 0, message = "Total non-business seats must be at least 1")
+	private Integer totalNonBusinessSeats = 0;
 	@Enumerated(EnumType.STRING)
 	private MealType meal;
 	@NotNull
-	@Min(value=5,message="Minimum 5 rows required")
+	@Min(value = 5, message = "Minimum 5 rows required")
 	private Integer numberOfRows;
-    private Integer numberOfColumns = (totalBusinessSeats+totalNonBusinessSeats)/numberOfRows;
+	public Integer getNumberOfColumns() {
+		if (numberOfRows == null || numberOfRows == 0) {
+			return 0;
+		}
+		return (this.totalBusinessSeats + this.totalNonBusinessSeats) / this.numberOfRows;
+	}
+
 	@NotNull
 	@Min(value = 1, message = "Ticket cost must be greater than 0")
 	private Double ticketCost;
