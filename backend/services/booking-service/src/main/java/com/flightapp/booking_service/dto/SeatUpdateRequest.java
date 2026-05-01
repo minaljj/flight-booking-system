@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SeatUpdateRequest {
-	private int delta;
+	private int businessDelta;
+	private int nonBusinessDelta;
 }
