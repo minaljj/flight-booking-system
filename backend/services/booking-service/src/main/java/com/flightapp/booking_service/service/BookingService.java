@@ -132,8 +132,8 @@ public class BookingService {
 				.orElseThrow(() -> new RuntimeException("Booking not found!"));
 		int businessDelta = 0;
 		int nonBusinessDelta = 0;
-		for (var p : booking.getPassengers()) {
-			if (SeatClass.BUSINESS.equals(p.getSeatClass())) {
+		for (var passenger : booking.getPassengers()) {
+			if (SeatClass.BUSINESS.equals(passenger.getSeatClass())) {
 				businessDelta--;
 			} else {
 				nonBusinessDelta--;
