@@ -71,79 +71,76 @@ class FlightServiceTest {
 		});
 		verify(flightRepository, never()).save(any(Flight.class));
 	}
+
 	@Test
 	void testSameFromAndTo() {
-        flight.setTo("Haryana");
-        when(flightRepository.existsByFlightNumber("VI345")).thenReturn(false);
-        assertThrows(IllegalArgumentException.class, () -> {
-            flightService.addInventory(flight);
-        });
-        verify(flightRepository, never()).save(any(Flight.class));
-    }
+		flight.setTo("Haryana");
+		when(flightRepository.existsByFlightNumber("VI345")).thenReturn(false);
+		assertThrows(IllegalArgumentException.class, () -> {
+			flightService.addInventory(flight);
+		});
+		verify(flightRepository, never()).save(any(Flight.class));
+	}
+
 	@Test
 	void testStartTimeandEndTime() {
-	    flight.setStartDateTime(LocalDateTime.of(2026, 7, 27, 7, 45));
-	    flight.setEndDateTime(LocalDateTime.of(2026, 7, 27, 4, 30));
-	    when(flightRepository.existsByFlightNumber("VI345"))
-	            .thenReturn(false);
-	    assertThrows(IllegalArgumentException.class, () -> {
-	        flightService.addInventory(flight);
-	    });
-	    verify(flightRepository, never())
-	            .save(any(Flight.class));
+		flight.setStartDateTime(LocalDateTime.of(2026, 7, 27, 7, 45));
+		flight.setEndDateTime(LocalDateTime.of(2026, 7, 27, 4, 30));
+		when(flightRepository.existsByFlightNumber("VI345")).thenReturn(false);
+		assertThrows(IllegalArgumentException.class, () -> {
+			flightService.addInventory(flight);
+		});
+		verify(flightRepository, never()).save(any(Flight.class));
 	}
+
 	@Test
-	void testSearchFlights()
-	{
-		FlightSearchRequest request=new FlightSearchRequest();
-			request.setFrom("Haryana");
-			request.setTo("Pune");
-			request.setDate("2026-05-08");
-			List<Flight> flights=List.of(flight);
-			when(flightRepository.findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetween(
-					eq("Haryana"),
-					eq("Pune"),
-					any(LocalDateTime.class),
-					any(LocalDateTime.class))).thenReturn(flights);
-			List<Flight> result=flightService.searchFlights(request);
-			assertNotNull(result);
-			assertEquals(1,result.size());
-			assertEquals("VI345",result.get(0).getFlightNumber());
-			
+	void testSearchFlights() {
+		FlightSearchRequest request = new FlightSearchRequest();
+		request.setFrom("Haryana");
+		request.setTo("Pune");
+		request.setDate("2026-05-08");
+		List<Flight> flights = List.of(flight);
+		when(flightRepository.findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetweenAndIsBlockedFalse(eq("Haryana"), eq("Pune"),
+				any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(flights);
+		List<Flight> result = flightService.searchFlights(request);
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		assertEquals("VI345", result.get(0).getFlightNumber());
+
 	}
+
 	@Test
 	void testGetFlightById() {
-	    
-	    when(flightRepository.findById(1L))
-	            .thenReturn(Optional.of(flight));
 
-	    Flight result = flightService.getFlightById(1L);
+		when(flightRepository.findById(1L)).thenReturn(Optional.of(flight));
 
-	    assertNotNull(result);
-	    assertEquals("VI345", result.getFlightNumber());
+		Flight result = flightService.getFlightById(1L);
 
-	    verify(flightRepository).findById(1L);
+		assertNotNull(result);
+		assertEquals("VI345", result.getFlightNumber());
+
+		verify(flightRepository).findById(1L);
 	}
+
 	@Test
-	void testGetFlightByIdNotFound()
-	{
+	void testGetFlightByIdNotFound() {
 		when(flightRepository.findById(2L)).thenReturn(Optional.empty());
-		Flight result=flightService.getFlightById(2L);
-		assertEquals(null,result);
+		Flight result = flightService.getFlightById(2L);
+		assertEquals(null, result);
 		verify(flightRepository).findById(2L);
 	}
+
 	@Test
-	void testSearchFlightsSameFromandTo() throws Exception
-	{
-		FlightSearchRequest request=new FlightSearchRequest();
+	void testSearchFlightsSameFromandTo() throws Exception {
+		FlightSearchRequest request = new FlightSearchRequest();
 		request.setFrom("Hyderabad");
 		request.setTo("Hyderabad");
 		request.setDate("2026-05-14");
-		assertThrows(IllegalArgumentException.class,()->
-		{
-		flightService.searchFlights(request);
+		assertThrows(IllegalArgumentException.class, () -> {
+			flightService.searchFlights(request);
 		});
-		verify(flightRepository,never()).findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetween(any(), any(),any(), any());
-		
+		verify(flightRepository, never()).findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetweenAndIsBlockedFalse(
+				any(), any(), any(), any());
+
 	}
 }

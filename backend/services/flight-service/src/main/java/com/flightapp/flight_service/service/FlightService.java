@@ -1,6 +1,7 @@
 package com.flightapp.flight_service.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +37,26 @@ public class FlightService {
 	        throw new IllegalArgumentException("From and To cities cannot be same");
 	    }
 
-	    LocalDate date = LocalDate.parse(request.getDate());
+	    try {
+			LocalDate date = LocalDate.parse(request.getDate());
 
-	    return flightRepository
-	            .findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetween(
-	                    request.getFrom(),
-	                    request.getTo(),
-	                    date.atStartOfDay(),
-	                    date.plusDays(1).atStartOfDay()
-	            );
+			return flightRepository.findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetweenAndIsBlockedFalse(
+					request.getFrom(), request.getTo(), date.atStartOfDay(), date.plusDays(1).atStartOfDay()).stream()
+					.filter(flight -> (flight.getTotalBusinessSeats() + flight.getTotalNonBusinessSeats()) > 0).toList();
+		} catch (Exception exception) {
+			return List.of();
+		}
 	}
 
 	public Flight getFlightById(Long id) {
 		return flightRepository.findById(id).orElse(null);
 	}
+	public void updateSeats(Long flightId, int businessDelta, int nonBusinessDelta) {
+		Flight flight = flightRepository.findById(flightId).orElse(null);
+		if (flight != null) {
+			flight.setTotalBusinessSeats(flight.getTotalBusinessSeats() - businessDelta);
+			flight.setTotalNonBusinessSeats(flight.getTotalNonBusinessSeats() - nonBusinessDelta);
+			flightRepository.save(flight);
+		}
+}
 }

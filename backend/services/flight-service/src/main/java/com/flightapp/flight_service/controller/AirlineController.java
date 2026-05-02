@@ -33,9 +33,9 @@ public class AirlineController {
     public ResponseEntity<?> blockAirline(@PathVariable String name) {
         try {
             airlineService.blockAirline(name);
-            return ResponseEntity.ok("Airline blocked successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.ok("Airline authorization status updated");
+        } catch (RuntimeException exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
         }
     }
     @GetMapping("/airline/list")

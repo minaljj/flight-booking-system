@@ -32,7 +32,7 @@ public class AirlineService {
             throw new RuntimeException("Airline not found");
         }
         Airline airline = airlineOpt.get();
-        airline.setBlocked(true);
+        airline.setBlocked(!airline.isBlocked());
         airlineRepository.save(airline);
     }
 
