@@ -21,7 +21,8 @@ public class RealFlightGateway implements FlightGateway {
 	}
 
 	@Override
-	public void updateSeats(Long flightId, int delta) {
-		flightServiceClient.updateFlightSeats(flightId, delta);
+	public void updateSeats(Long flightId, int businessDelta, int nonBusinessDelta) {
+		flightServiceClient.updateFlightSeats(flightId, businessDelta, nonBusinessDelta);
 	}
+
 }

@@ -19,6 +19,7 @@ import com.flightapp.booking_service.integration.FlightGateway;
 import com.flightapp.booking_service.integration.NotificationGateway;
 import com.flightapp.booking_service.model.Booking;
 import com.flightapp.booking_service.model.BookingStatus;
+import com.flightapp.booking_service.model.SeatClass;
 import com.flightapp.booking_service.repository.BookingRepository;
 
 @Service
@@ -40,15 +41,24 @@ public class BookingService {
 
 		if (booking.getPassengers() != null) {
 			booking.setNoOfSeats(booking.getPassengers().size());
-			for (var p : booking.getPassengers()) {
-				p.setBooking(booking);
-				p.setFlightId(flightId);
-				validateSeat(p.getSeatNumber(), flight);
+			for (var passenger : booking.getPassengers()) {
+				passenger.setBooking(booking);
+				passenger.setFlightId(flightId);
+				validateSeat(passenger.getSeatNumber(), flight);
 			}
 		}
 		try {
 			Booking saved = bookingRepository.save(booking);
-			flightGateway.updateSeats(flightId, -saved.getNoOfSeats());
+			int businessDelta = 0;
+			int nonBusinessDelta = 0;
+			for (var passenger : saved.getPassengers()) {
+				if (SeatClass.BUSINESS.equals(passenger.getSeatClass())) {
+					businessDelta++;
+				} else {
+					nonBusinessDelta++;
+				}
+			}
+			flightGateway.updateSeats(flightId, businessDelta, nonBusinessDelta);
 
 			NotificationRequest notification = new NotificationRequest();
 			notification.setEventType("BOOKING_CONFIRMED");
@@ -118,13 +128,21 @@ public class BookingService {
 	}
 
 	public void cancelBooking(String pnr) {
-
 		Booking booking = bookingRepository.findByPnr(pnr)
 				.orElseThrow(() -> new RuntimeException("Booking not found!"));
+		int businessDelta = 0;
+		int nonBusinessDelta = 0;
+		for (var passenger : booking.getPassengers()) {
+			if (SeatClass.BUSINESS.equals(passenger.getSeatClass())) {
+				businessDelta--;
+			} else {
+				nonBusinessDelta--;
+			}
+		}
 		booking.getPassengers().clear();
 		booking.setStatus(BookingStatus.CANCELLED);
 		Booking updated = bookingRepository.save(booking);
-		flightGateway.updateSeats(updated.getFlightId(), updated.getNoOfSeats());
+		flightGateway.updateSeats(updated.getFlightId(), businessDelta, nonBusinessDelta);
 
 		NotificationRequest notification = new NotificationRequest();
 		notification.setEventType("BOOKING_CANCELLED");
@@ -134,7 +152,6 @@ public class BookingService {
 		notification.setNoOfSeats(updated.getNoOfSeats());
 		notification.setFlightId(updated.getFlightId());
 		notificationGateway.sendNotification(notification);
-
 	}
 
 	public Optional<Booking> getTicketDetails(String pnr) {

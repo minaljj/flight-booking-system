@@ -10,5 +10,4 @@ public class NotificationRequest {
 	private String pnr;
 	private Long flightId;
 	private int noOfSeats;
-
 }
