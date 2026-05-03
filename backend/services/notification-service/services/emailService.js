@@ -12,13 +12,14 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-const sendEmail = async (to, subject, text) => {
+const sendEmail = async (to, subject, text, html) => {
   try {
     const info = await transporter.sendMail({
       from: '"Flight App" <no-reply@flightapp.com>',
       to,
       subject,
-      text
+      text,
+      html
     });
     console.log('Email sent: %s', info.messageId);
     return info;

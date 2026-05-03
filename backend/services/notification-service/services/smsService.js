@@ -1,29 +1,30 @@
-const twilio = require('twilio');
 require('dotenv').config();
-
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const client = accountSid && authToken ? twilio(accountSid, authToken) : null;
-
+const axios = require('axios');
 const sendSms = async (to, body) => {
-  if (!client) {
-    console.log('Twilio client not configured. Skipping SMS.');
-    return;
-  }
-
   try {
-    const message = await client.messages.create({
-      body,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to
-    });
-    console.log('SMS sent: %s', message.sid);
-    return message;
+    const formattedNumber = to.replace('+', '');
+    const response = await axios.post(
+      'https://www.fast2sms.com/dev/bulkV2',
+      {
+        route: "q",
+        message: body,
+        language: "english",
+        flash: 0,
+        numbers: formattedNumber,
+      },
+      {
+        headers: {
+          authorization: process.env.FAST2SMS_API_KEY,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log('SMS sent:', response.data);
+    return response.data;
   } catch (error) {
-    console.error('SMS error:', error);
+    console.error('SMS error:', error.response?.data || error.message);
   }
 };
-
 module.exports = {
   sendSms
 };
