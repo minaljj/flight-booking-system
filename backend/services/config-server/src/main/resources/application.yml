@@ -1,0 +1,20 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/minaljj/config-repo.git
+          clone-on-start: true
+          default-label: main
+
+encrypt:
+  key: ${ENCRYPT_KEY:o0RzgGcDuJ46qaje&QWyTjYwecLh9HhQXA9lG&h!rtx9-jKxM+P8Tv9PSjNOnsM0}
+
+logging:
+  level:
+    org.springframework.cloud.config.server: DEBUG

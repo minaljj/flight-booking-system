@@ -17,7 +17,7 @@ public class Airline {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
-	@NotBlank
+	@NotBlank(message="Airline name is required")
 	private String name;
 	private String logo;
 	@NotBlank(message="Contact Number is Required")

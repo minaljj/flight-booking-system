@@ -1,26 +1,22 @@
 server:
-    port: 8083
-   
+  port: 8083
+
 spring:
-    application:
-        name: flight-service
+  application:
+    name: flight-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/flight_db}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:Welcome@123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
 
-    datasource:
-        url: jdbc:mysql://localhost:3306/flight_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-        username: root
-        password: Welcome@123
-        driver-class-name: com.mysql.cj.jdbc.Driver
-
-    jpa:
-        hibernate:
-            ddl-auto: update
-        show-sql: true
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.MySQLDialect
-
-    security:
-        oauth2:
-            resourceserver:
-                jwt:
-                    jwk-set-uri: http://localhost:8081/api/v1.0/flight/auth/.well-known/jwks.json
+jwt:
+  secret: ${JWT_SECRET:FlightAppSecretKey12345FlightAppSecretKey12345FlightAppSecretKey12345}
+debug: true	
