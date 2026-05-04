@@ -40,7 +40,7 @@ public class SecurityConfig {
 
 		http.csrf(csrf -> csrf.disable())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(auth -> auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+				.authorizeHttpRequests(auth -> auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/v1.0/flight/booking/ticket/**").permitAll()
 						.anyRequest().authenticated());
 
 		http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);

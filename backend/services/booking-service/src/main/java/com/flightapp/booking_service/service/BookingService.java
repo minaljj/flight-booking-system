@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.flightapp.booking_service.dto.BookingHistoryResponse;
@@ -106,16 +108,14 @@ public class BookingService {
 		}
 	}
 
-	public List<BookingHistoryResponse> getBookingHistory(String emailId) {
-
-		return bookingRepository.findByEmailId(emailId).stream().map(b -> {
+	public Page<BookingHistoryResponse> getBookingHistory(String emailId, Pageable pageable) {
+		return bookingRepository.findByEmailId(emailId, pageable).map(b -> {
 			BookingHistoryResponse dto = new BookingHistoryResponse();
 			dto.setPnr(b.getPnr());
 			dto.setFlightId(b.getFlightId());
 			dto.setStatus(b.getStatus().name());
 			dto.setBookingDate(b.getBookingDate());
 			dto.setNoOfSeats(b.getNoOfSeats());
-
 			List<SeatInfoResponse> seats = b.getPassengers().stream().map(p -> {
 				SeatInfoResponse s = new SeatInfoResponse();
 				s.setSeatNumber(p.getSeatNumber());
@@ -124,7 +124,7 @@ public class BookingService {
 
 			dto.setSeats(seats);
 			return dto;
-		}).toList();
+		});
 	}
 
 	public void cancelBooking(String pnr) {
