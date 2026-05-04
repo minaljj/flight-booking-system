@@ -160,9 +160,9 @@ function TicketDetails() {
 
 function TicketInfo({ label, val }) {
    return (
-      <div className="space-y-1.5">
-         <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{label}</p>
-         <p className="font-black text-slate-900 text-sm border-l-4 border-blue-600 pl-3 leading-tight">{val}</p>
+      <div className="space-y-1.5 min-w-0">
+         <p className="text-xs font-black text-slate-400 uppercase tracking-widest truncate" title={label}>{label}</p>
+         <p className="font-black text-slate-900 text-sm border-l-4 border-blue-600 pl-3 leading-tight truncate" title={val}>{val}</p>
       </div>
    );
 }

@@ -21,15 +21,14 @@ export default function Login() {
     setLoading(true);
     try {
       const response = await api.post('/api/v1.0/flight/auth/login', { username, password });
-      const { token } = response.data;
-      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-      const decodedUsername = tokenPayload.sub || tokenPayload.username || username;
+      const { token, username: responseUsername, email } = response.data;
       localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify({ ...response.data, username: decodedUsername }));
-      localStorage.setItem('username', decodedUsername);
-      toast.success(`Welcome back, ${decodedUsername}!`);
+      localStorage.setItem('user', JSON.stringify(response.data));
+      localStorage.setItem('username', responseUsername);
+      localStorage.setItem('email', email);
+      toast.success(`Welcome back, ${responseUsername}!`);
       navigate(decodeURIComponent(redirect));
-    } catch (err) {
+    }  catch (err) {
       toast.error('Invalid credentials. Please try again.');
     } finally {
       setLoading(false);

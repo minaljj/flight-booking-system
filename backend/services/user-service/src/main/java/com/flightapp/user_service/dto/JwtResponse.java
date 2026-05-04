@@ -9,6 +9,8 @@ import java.util.List;
 public class JwtResponse {
 	private String token;
 	private String type = "Bearer";
+	private String username;
+	private String email;
 	private String refreshToken;
 	private Long id;
 	private List<String> roles;
@@ -19,5 +21,7 @@ public class JwtResponse {
 		this.refreshToken = refreshToken;
 		this.id = id;
 		this.roles = roles;
+		this.username = username;
+		this.email = email;
 	}
 }
