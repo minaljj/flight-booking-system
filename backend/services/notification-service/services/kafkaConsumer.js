@@ -2,9 +2,11 @@ const { Kafka } = require('kafkajs');
 const emailService = require('./emailService');
 const emailTemplates = require('./emailTemplates');
 
+let broker = process.env.KAFKA_BROKER;
+
 const kafka = new Kafka({
   clientId: 'notification-service',
-  brokers: [process.env.KAFKA_BROKER || '127.0.0.1:9092']
+  brokers: [broker]
 });
 
 const consumer = kafka.consumer({ groupId: 'notification-group' });
