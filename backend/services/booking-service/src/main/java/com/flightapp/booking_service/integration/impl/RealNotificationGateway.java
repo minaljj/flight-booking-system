@@ -37,7 +37,7 @@ public class RealNotificationGateway implements NotificationGateway {
 			payload.put("seats", request.getNoOfSeats());
 			payload.put("flightId", request.getFlightId());
 
-			restTemplate.postForObject(notificationServiceUrl, payload, Map.class);
+			kafkaTemplate.send("notification-send", payload);
 		} catch (Exception e) {
 			System.err.println("Failed to trigger notification: " + e.getMessage());
 		}

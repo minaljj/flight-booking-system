@@ -6,23 +6,19 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Plane, Clock, ArrowRight, ShieldCheck } from 'lucide-react';
 import { format } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Pagination } from '@/components/ui/Pagination';
 
 export default function SearchResults() {
   const location = useLocation();
   const { from: fromParam, to: toParam, date } = location.state || {};
-  const navigate = useNavigate();
-  
-  const handleBook = (flight) => {
-  navigate('/booking', {
-    state: { flight }
-  });
-};
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
 
-  const { data: flights, isLoading } = useQuery({
-    queryKey: ['flights', fromParam, toParam, date],
+  const { data: flightsData, isLoading } = useQuery({
+    queryKey: ['flights', fromParam, toParam, date, page],
     queryFn: async () => {
-      const response = await api.post('/api/v1.0/flight/search', {
+      const response = await api.post(`/api/v1.0/flight/search?page=${page}&size=${size}`, {
         from: fromParam || '',
         to: toParam || '',
         date: date || ''
@@ -30,6 +26,9 @@ export default function SearchResults() {
       return response.data;
     }
   });
+  const flights = flightsData?.content || [];
+  const totalPages = flightsData?.totalPages || 0;
+  const totalElements = flightsData?.totalElements || 0;
 
   if (isLoading) return <div className="p-20 text-center text-slate-400 font-bold animate-pulse uppercase tracking-[0.2em] text-xs">Scanning available rotations...</div>;
 
@@ -46,7 +45,7 @@ export default function SearchResults() {
           <p className="text-slate-500 font-medium mt-2">{date ? format(new Date(date), 'EEEE, MMMM do yyyy') : 'All Available Dates'}</p>
         </div>
         <div className="bg-slate-50 px-6 py-3 rounded-2xl border border-slate-100">
-          <span className="text-2xl font-black text-blue-600">{flights?.length || 0}</span>
+          <span className="text-2xl font-black text-blue-600">{totalElements}</span>
           <span className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-2">Flights Found</span>
         </div>
       </div>
@@ -63,6 +62,13 @@ export default function SearchResults() {
           </div>
         )}
       </div>
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        pageSize={size}
+        onPageSizeChange={setSize}
+      />
     </div>
   );
 }
@@ -124,7 +130,7 @@ function FlightCard({ flight }) {
         <div className="bg-slate-50/50 px-8 py-4 border-t border-slate-100 flex justify-between items-center">
           <div className="flex gap-4">
             <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Aircraft: <span className="text-slate-900">{flight.instrumentUsed}</span></span>
-            <span className="text-xs font-black text-slate-400 uppercase tracking-widest border-l border-slate-200 pl-4 ml-4">Seats: <span className="text-emerald-600">{flight.availableSeats} Remaining</span></span>
+            <span className="text-xs font-black text-slate-400 uppercase tracking-widest border-l border-slate-200 pl-4 ml-4">Seats: <span className="text-emerald-600">{(flight.totalBusinessSeats || 0) + (flight.totalNonBusinessSeats || 0)} Remaining</span></span>
           </div>
           <div className="flex gap-2">
             <Badge variant="outline" className="text-xs font-black uppercase tracking-widest bg-white border-slate-200 px-3">Business</Badge>
