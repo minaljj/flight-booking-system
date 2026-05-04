@@ -41,6 +41,13 @@ public class FlightController {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(flightService.searchFlights(request, pageable));
     }
+    @GetMapping("/all")
+    public ResponseEntity<Page<Flight>> getAllFlights(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(flightService.getAllFlights(pageable));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Flight> getFlight(@PathVariable Long id) {
@@ -52,11 +59,5 @@ public class FlightController {
 
         return ResponseEntity.ok(foundFlight);
     }
-    @GetMapping("/all")
-    public ResponseEntity<Page<Flight>> getAllFlights(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(flightService.getAllFlights(pageable));
-    }
+   
 }

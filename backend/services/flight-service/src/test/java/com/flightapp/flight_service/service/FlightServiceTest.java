@@ -98,25 +98,31 @@ class FlightServiceTest {
 		});
 		verify(flightRepository, never()).save(any(Flight.class));
 	}
-
 	@Test
 	void testSearchFlights() {
-		FlightSearchRequest request = new FlightSearchRequest();
-		request.setFrom("Haryana");
-		request.setTo("Pune");
-		request.setDate("2026-05-08");
-		Pageable pageable=PageRequest.of(0, 10);
-		Page<Flight> flightPage=new PageImpl<>(List.of(flight));
-		when(flightRepository
-		        .findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetweenAndIsBlockedFalse(
-		                eq("Haryana"),
-		                eq("Pune"),
-		                any(LocalDateTime.class),
-		                any(LocalDateTime.class),
-		                eq(pageable)
-		        ))
-		        .thenReturn(flightPage);
+	    FlightSearchRequest request = new FlightSearchRequest();
+	    request.setFrom("Haryana");
+	    request.setTo("Pune");
+	    request.setDate("2026-05-08");
 
+	    Pageable pageable = PageRequest.of(0, 10);
+	    Page<Flight> flightPage = new PageImpl<>(List.of(flight));
+
+	    when(flightRepository
+	            .findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetweenAndIsBlockedFalse(
+	                    eq("Haryana"),
+	                    eq("Pune"),
+	                    any(LocalDateTime.class),
+	                    any(LocalDateTime.class),
+	                    any(Pageable.class)
+	            ))
+	            .thenReturn(flightPage);
+
+	    Page<Flight> result = flightService.searchFlights(request, pageable);
+
+	    assertNotNull(result);
+	    assertEquals(1, result.getContent().size());
+	    assertEquals("VI345", result.getContent().get(0).getFlightNumber());
 	}
 
 	@Test
