@@ -1,10 +1,10 @@
 package com.flightapp.flight_service.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.flightapp.flight_service.dto.FlightSearchRequest;
@@ -31,21 +31,20 @@ public class FlightService {
 		return flightRepository.save(flight);
 	}
 
-	public List<Flight> searchFlights(FlightSearchRequest request) {
-
-	    if(request.getFrom().equalsIgnoreCase(request.getTo())) {
+	public Page<Flight> searchFlights(FlightSearchRequest request, Pageable pageable) {
+	    if (request.getFrom().equalsIgnoreCase(request.getTo())) {
 	        throw new IllegalArgumentException("From and To cities cannot be same");
 	    }
 
-	    try {
-			LocalDate date = LocalDate.parse(request.getDate());
+	    LocalDate date = LocalDate.parse(request.getDate());
 
-			return flightRepository.findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetweenAndIsBlockedFalse(
-					request.getFrom(), request.getTo(), date.atStartOfDay(), date.plusDays(1).atStartOfDay()).stream()
-					.filter(flight -> (flight.getTotalBusinessSeats() + flight.getTotalNonBusinessSeats()) > 0).toList();
-		} catch (Exception exception) {
-			return List.of();
-		}
+	    return flightRepository.findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetweenAndIsBlockedFalse(
+	            request.getFrom(),
+	            request.getTo(),
+	            date.atStartOfDay(),
+	            date.plusDays(1).atStartOfDay(),
+	            pageable
+	    );
 	}
 
 	public Flight getFlightById(Long id) {
@@ -59,4 +58,8 @@ public class FlightService {
 			flightRepository.save(flight);
 		}
 }
+	
+	public Page<Flight> getAllFlights(Pageable pageable) {
+		return flightRepository.findAll(pageable);
+	}
 }

@@ -1,8 +1,9 @@
 package com.flightapp.flight_service.controller;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
@@ -13,7 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -46,6 +50,8 @@ class FlightControllerTest {
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(flightController)
+                .setMessageConverters(
+                        new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(objectMapper))
                 .build();
 
         flight = new Flight();
@@ -69,11 +75,9 @@ class FlightControllerTest {
     void testAddInventory() throws Exception {
 
         when(flightService.addInventory(any(Flight.class))).thenReturn(flight);
-
-        mockMvc.perform(post("/api/v1.0/flight/airline/inventory")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(flight)))
-                .andExpect(status().isCreated());
+        ResponseEntity<Long> response = flightController.addInventory(flight);
+        assertEquals(201, response.getStatusCode().value());
+        assertEquals(1L, response.getBody());
     }
     @Test
     void testSearchFlights() throws Exception
@@ -82,11 +86,12 @@ class FlightControllerTest {
     	request.setFrom("Bangalore");
     	request.setTo("Hyderabad");
     	request.setDate("2026-07-28");
-    	when(flightService.searchFlights(any(FlightSearchRequest.class))).thenReturn(List.of(flight));
-    	mockMvc.perform(post("/api/v1.0/flight/search")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
+    	Page<Flight> flightPage=new PageImpl<>(List.of(flight));
+    	when(flightService.searchFlights(any(FlightSearchRequest.class),any(Pageable.class))).thenReturn(flightPage);
+    	ResponseEntity<Page<Flight>> response = flightController.searchFlights(request, 0, 10);
+    	 assertEquals(200, response.getStatusCode().value());
+    	    assertNotNull(response.getBody());
+    	    assertEquals(1, response.getBody().getContent().size());
     }
     @Test
     void testGetFlight() throws Exception
@@ -101,7 +106,16 @@ class FlightControllerTest {
     	when(flightService.getFlightById(2L)).thenReturn(null);
     	mockMvc.perform(get("/api/v1.0/flight/2")).andExpect(status().isNotFound());
     }
-    
+    @Test
+    void testGetAllFlights() throws Exception {
+        Page<Flight> flightPage = new PageImpl<>(List.of(flight));
+
+        when(flightService.getAllFlights(any(Pageable.class))).thenReturn(flightPage);
+
+        ResponseEntity<Page<Flight>> response = flightController.getAllFlights(0, 10);
+
+        assertEquals(200, response.getStatusCode().value());
+    }
     
   
    

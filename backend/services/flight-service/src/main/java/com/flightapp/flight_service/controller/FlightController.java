@@ -1,7 +1,8 @@
 package com.flightapp.flight_service.controller;
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.flightapp.flight_service.dto.FlightSearchRequest;
@@ -32,10 +34,21 @@ public class FlightController {
         return ResponseEntity.status(201).body(savedFlight.getId());   
     }
     @PostMapping("/search")
-    public ResponseEntity<List<Flight>> searchFlights(@Valid @RequestBody FlightSearchRequest request) {
-        List<Flight> flights = flightService.searchFlights(request);
-        return ResponseEntity.ok(flights);
+    public ResponseEntity<Page<Flight>> searchFlights(
+            @Valid @RequestBody FlightSearchRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(flightService.searchFlights(request, pageable));
     }
+    @GetMapping("/all")
+    public ResponseEntity<Page<Flight>> getAllFlights(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(flightService.getAllFlights(pageable));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Flight> getFlight(@PathVariable Long id) {
         Flight foundFlight = flightService.getFlightById(id);
@@ -46,4 +59,5 @@ public class FlightController {
 
         return ResponseEntity.ok(foundFlight);
     }
+   
 }
