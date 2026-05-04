@@ -49,7 +49,7 @@ public class FlightController {
         return ResponseEntity.ok(flightService.getAllFlights(pageable));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<Flight> getFlight(@PathVariable Long id) {
         Flight foundFlight = flightService.getFlightById(id);
 

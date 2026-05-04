@@ -20,7 +20,7 @@ function ManageAirlines() {
   const { data: airlines, isLoading } = useQuery({
     queryKey: ['airlines'],
     queryFn: async () => {
-      const response = await api.get('/api/v1.0/flight/admin/airline/list');
+      const response = await api.get('/api/v1.0/flight/airline/list');
       return response.data;
     }
   });
@@ -113,10 +113,10 @@ function ManageAirlines() {
                   <Badge 
                     className={cn(
                       "font-black px-4 py-1.5 text-xs uppercase tracking-widest border-none",
-                      airline.isBlocked ? "bg-rose-50 text-rose-600 shadow-sm shadow-rose-500/5" : "bg-emerald-50 text-emerald-600 shadow-sm shadow-emerald-500/5"
+                      airline.blocked ? "bg-rose-50 text-rose-600 shadow-sm shadow-rose-500/5" : "bg-emerald-50 text-emerald-600 shadow-sm shadow-emerald-500/5"
                     )}
                   >
-                    {airline.isBlocked ? 'Access Restricted' : 'Active Operator'}
+                    {airline.blocked ? 'Access Restricted' : 'Active Operator'}
                   </Badge>
                 </TableCell>
                 <TableCell className="pr-10 text-right">
@@ -125,11 +125,11 @@ function ManageAirlines() {
                     size="sm" 
                     className={cn(
                       "font-black text-xs uppercase tracking-widest h-10 px-6 rounded-xl transition-all shadow-sm",
-                      airline.isBlocked ? "border-emerald-200 text-emerald-600 hover:bg-emerald-50" : "border-rose-200 text-rose-600 hover:bg-rose-50"
+                      airline.blocked ? "border-emerald-200 text-emerald-600 hover:bg-emerald-50" : "border-rose-200 text-rose-600 hover:bg-rose-50"
                     )}
                     onClick={() => toggleBlockMutation.mutate(airline.name)}
                   >
-                    {airline.isBlocked ? <><CheckCircle2 className="w-3.5 h-3.5 mr-2" /> Allow Operation</> : <><ShieldAlert className="w-3.5 h-3.5 mr-2" /> Revoke Access</>}
+                    {airline.blocked ? <><CheckCircle2 className="w-3.5 h-3.5 mr-2" /> Allow Operation</> : <><ShieldAlert className="w-3.5 h-3.5 mr-2" /> Revoke Access</>}
                   </Button>
                 </TableCell>
               </TableRow>

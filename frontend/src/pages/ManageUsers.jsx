@@ -4,23 +4,28 @@ import api from '@/lib/api-client';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import {  ShieldAlert, ShieldCheck, Search,Filter,Mail,User as UserIcon,CheckCircle2,XCircle} from 'lucide-react';
+import { ShieldAlert, ShieldCheck, Search, Filter, Mail, User as UserIcon, CheckCircle2, XCircle } from 'lucide-react';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/Table';
 import { Input } from '@/components/ui/Input';
 import { toast } from 'sonner';
 import { withAuth } from '@/lib/withAuth';
+import { Pagination } from '@/components/ui/Pagination';
 
 function ManageUsers() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
 
-  const { data: users, isLoading } = useQuery({
-    queryKey: ['admin-users'],
+  const { data: usersData, isLoading } = useQuery({
+    queryKey: ['admin-users', page],
     queryFn: async () => {
-      const response = await api.get('/api/v1.0/flight/auth/admin/users');
+      const response = await api.get(`/api/v1.0/flight/auth/admin/users?page=${page}&size=${size}`);
       return response.data;
     }
   });
+  const users = usersData?.content || [];
+  const totalPages = usersData?.totalPages || 0;
 
   const blockMutation = useMutation({
     mutationFn: async ({ username, block }) => {
@@ -35,7 +40,7 @@ function ManageUsers() {
     }
   });
 
-  const filteredUsers = users?.filter(u => 
+  const filteredUsers = users?.filter(u =>
     u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
     u.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -45,27 +50,27 @@ function ManageUsers() {
   return (
     <div className="container mx-auto px-4 py-6 max-w-6xl">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
-         <div>
-            <div className="flex items-center gap-2 mb-2">
-               <Badge className="bg-emerald-600/10 text-emerald-600 border-none font-black px-3 py-1 text-xs uppercase tracking-widest">Access Control</Badge>
-            </div>
-            <h1 className="text-4xl font-black tracking-tighter text-slate-900 flex items-center gap-4">
-               User <span className="text-blue-600">Management</span>
-            </h1>
-            <p className="text-slate-500 font-medium mt-1">Monitor and manage access privileges and account security.</p>
-         </div>
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Badge className="bg-emerald-600/10 text-emerald-600 border-none font-black px-3 py-1 text-xs uppercase tracking-widest">Access Control</Badge>
+          </div>
+          <h1 className="text-4xl font-black tracking-tighter text-slate-900 flex items-center gap-4">
+            User <span className="text-blue-600">Management</span>
+          </h1>
+          <p className="text-slate-500 font-medium mt-1">Monitor and manage access privileges and account security.</p>
+        </div>
       </div>
 
       <div className="flex gap-4 mb-6">
-         <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <Input 
-               className="pl-11 h-12 bg-white border-slate-200 rounded-2xl shadow-sm focus:ring-blue-600/10 transition-all font-bold" 
-               placeholder="Search by username or email..." 
-               value={searchTerm}
-               onChange={e => setSearchTerm(e.target.value)}
-            />
-         </div>
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Input
+            className="pl-11 h-12 bg-white border-slate-200 rounded-2xl shadow-sm focus:ring-blue-600/10 transition-all font-bold"
+            placeholder="Search by username or email..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+        </div>
       </div>
 
       <Card className="bg-white border-slate-100 shadow-sm rounded-[2.5rem] overflow-hidden">
@@ -83,15 +88,15 @@ function ManageUsers() {
               <TableRow key={user.id} className="border-slate-50 hover:bg-slate-50/30 transition-colors">
                 <TableCell className="py-5 pl-8">
                   <div className="flex items-center gap-4">
-                     <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
-                        <UserIcon className="w-5 h-5" />
-                     </div>
-                     <div>
-                        <p className="font-black text-slate-900 leading-none mb-1">{user.username}</p>
-                        <p className="text-xs font-medium text-slate-400 flex items-center gap-1">
-                           <Mail className="w-3 h-3" /> {user.email}
-                        </p>
-                     </div>
+                    <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
+                      <UserIcon className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="font-black text-slate-900 leading-none mb-1">{user.username}</p>
+                      <p className="text-xs font-medium text-slate-400 flex items-center gap-1">
+                        <Mail className="w-3 h-3" /> {user.email}
+                      </p>
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -99,38 +104,38 @@ function ManageUsers() {
                     {user.roles?.map((role, idx) => {
                       const roleName = typeof role === 'string' ? role : role.name;
                       return (
-                      <Badge key={idx} variant="outline" className="bg-white border-slate-200 text-slate-600 font-bold text-[10px] uppercase tracking-tighter">
-                        {roleName?.replace('ROLE_', '')}
-                      </Badge>
+                        <Badge key={idx} variant="outline" className="bg-white border-slate-200 text-slate-600 font-bold text-[10px] uppercase tracking-tighter">
+                          {roleName?.replace('ROLE_', '')}
+                        </Badge>
                       );
                     })}
                   </div>
                 </TableCell>
                 <TableCell>
-                  {user.isBlocked ? (
+                  {user.blocked ? (
                     <div className="flex items-center gap-2 text-rose-600">
-                       <XCircle className="w-4 h-4" />
-                       <span className="text-xs font-black uppercase tracking-widest">Restricted</span>
+                      <XCircle className="w-4 h-4" />
+                      <span className="text-xs font-black uppercase tracking-widest">Restricted</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 text-emerald-600">
-                       <CheckCircle2 className="w-4 h-4" />
-                       <span className="text-xs font-black uppercase tracking-widest">Active</span>
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span className="text-xs font-black uppercase tracking-widest">Active</span>
                     </div>
                   )}
                 </TableCell>
                 <TableCell className="text-right pr-8">
-                  <Button 
+                  <Button
                     size="sm"
-                    variant={user.isBlocked ? "default" : "destructive"}
-                    className={user.isBlocked ? "bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs px-4" : "bg-rose-50 text-rose-600 hover:bg-rose-100 border-none rounded-xl font-black text-xs px-4"}
-                    onClick={() => blockMutation.mutate({ username: user.username, block: !user.isBlocked })}
+                    variant={user.blocked ? "default" : "destructive"}
+                    className={user.blocked ? "bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs px-4" : "bg-rose-50 text-rose-600 hover:bg-rose-100 border-none rounded-xl font-black text-xs px-4"}
+                    onClick={() => blockMutation.mutate({ username: user.username, block: !user.blocked })}
                     disabled={blockMutation.isLoading}
                   >
-                    {user.isBlocked ? (
-                       <><ShieldCheck className="mr-2 w-3.5 h-3.5" /> Restore Access</>
+                    {user.blocked ? (
+                      <><ShieldCheck className="mr-2 w-3.5 h-3.5" /> Restore Access</>
                     ) : (
-                       <><ShieldAlert className="mr-2 w-3.5 h-3.5" /> Block Account</>
+                      <><ShieldAlert className="mr-2 w-3.5 h-3.5" /> Block Account</>
                     )}
                   </Button>
                 </TableCell>
@@ -139,6 +144,13 @@ function ManageUsers() {
           </TableBody>
         </Table>
       </Card>
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        pageSize={size}
+        onPageSizeChange={setSize}
+      />
     </div>
   );
 }

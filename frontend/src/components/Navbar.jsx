@@ -16,7 +16,11 @@ export default function Navbar() {
       setUser(user);
 
       const token = localStorage.getItem('token');
-      if (token) {
+      const storedUsername = localStorage.getItem('username');
+
+      if (storedUsername) {
+        setUsername(storedUsername);
+      } else if (token) {
         try {
           const payload = JSON.parse(atob(token.split('.')[1]));
           setUsername(payload.sub || user?.username || 'User');

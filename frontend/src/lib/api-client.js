@@ -11,6 +11,7 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -21,14 +22,16 @@ api.interceptors.response.use(
         const userData = JSON.parse(localStorage.getItem('user'));
         const refreshToken = userData?.refreshToken;
         if (refreshToken) {
-          const res = await axios.post('http://localhost:8080/api/v1.0/flight/auth/refresh', { refreshToken });
-
-          if (res.data.token) {
-            localStorage.setItem('token', res.data.token);
-            userData.token = res.data.token;
+          const res = await axios.post(
+            `${api.defaults.baseURL}/api/v1.0/flight/auth/refresh`,
+            { refreshToken }
+          );
+          const newToken = res.data.token;
+          if (newToken) {
+            localStorage.setItem('token', newToken);
+            userData.token = newToken;
             localStorage.setItem('user', JSON.stringify(userData));
-          
-            originalRequest.headers.Authorization = `Bearer ${res.data.token}`;
+            originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
             return api(originalRequest);
           }
         }
@@ -38,7 +41,6 @@ api.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-
     return Promise.reject(error);
   }
 );
