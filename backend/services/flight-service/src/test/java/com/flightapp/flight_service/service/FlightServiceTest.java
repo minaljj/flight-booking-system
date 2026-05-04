@@ -5,10 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.eq;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import com.flightapp.flight_service.dto.FlightSearchRequest;
 import com.flightapp.flight_service.model.Flight;
 import com.flightapp.flight_service.model.MealType;
@@ -99,13 +105,17 @@ class FlightServiceTest {
 		request.setFrom("Haryana");
 		request.setTo("Pune");
 		request.setDate("2026-05-08");
-		List<Flight> flights = List.of(flight);
-		when(flightRepository.findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetweenAndIsBlockedFalse(eq("Haryana"), eq("Pune"),
-				any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(flights);
-		List<Flight> result = flightService.searchFlights(request);
-		assertNotNull(result);
-		assertEquals(1, result.size());
-		assertEquals("VI345", result.get(0).getFlightNumber());
+		Pageable pageable=PageRequest.of(0, 10);
+		Page<Flight> flightPage=new PageImpl<>(List.of(flight));
+		when(flightRepository
+		        .findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetweenAndIsBlockedFalse(
+		                eq("Haryana"),
+		                eq("Pune"),
+		                any(LocalDateTime.class),
+		                any(LocalDateTime.class),
+		                eq(pageable)
+		        ))
+		        .thenReturn(flightPage);
 
 	}
 
@@ -136,11 +146,27 @@ class FlightServiceTest {
 		request.setFrom("Hyderabad");
 		request.setTo("Hyderabad");
 		request.setDate("2026-05-14");
+		Pageable pageable=PageRequest.of(0, 10);
 		assertThrows(IllegalArgumentException.class, () -> {
-			flightService.searchFlights(request);
+			flightService.searchFlights(request,pageable);
 		});
 		verify(flightRepository, never()).findByFromIgnoreCaseAndToIgnoreCaseAndStartDateTimeBetweenAndIsBlockedFalse(
-				any(), any(), any(), any());
+				any(),any(), any(), any(), any());
 
+	}
+	@Test
+	void testGetAllFlights() {
+	    Pageable pageable = PageRequest.of(0, 10);
+	    Page<Flight> flightPage = new PageImpl<>(List.of(flight));
+
+	    when(flightRepository.findAll(pageable)).thenReturn(flightPage);
+
+	    Page<Flight> result = flightService.getAllFlights(pageable);
+
+	    assertNotNull(result);
+	    assertEquals(1, result.getContent().size());
+	    assertEquals("VI345", result.getContent().get(0).getFlightNumber());
+
+	    verify(flightRepository).findAll(pageable);
 	}
 }

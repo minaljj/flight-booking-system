@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -82,7 +85,8 @@ class FlightControllerTest {
     	request.setFrom("Bangalore");
     	request.setTo("Hyderabad");
     	request.setDate("2026-07-28");
-    	when(flightService.searchFlights(any(FlightSearchRequest.class))).thenReturn(List.of(flight));
+    	Page<Flight> flightPage=new PageImpl<>(List.of(flight));
+    	when(flightService.searchFlights(any(FlightSearchRequest.class),any(Pageable.class))).thenReturn(flightPage);
     	mockMvc.perform(post("/api/v1.0/flight/search")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -101,7 +105,15 @@ class FlightControllerTest {
     	when(flightService.getFlightById(2L)).thenReturn(null);
     	mockMvc.perform(get("/api/v1.0/flight/2")).andExpect(status().isNotFound());
     }
-    
+    @Test
+    void testGetAllFlights() throws Exception {
+        Page<Flight> flightPage = new PageImpl<>(List.of(flight));
+
+        when(flightService.getAllFlights(any(Pageable.class))).thenReturn(flightPage);
+
+        mockMvc.perform(get("/api/v1.0/flight/all"))
+                .andExpect(status().isOk());
+    }
     
   
    

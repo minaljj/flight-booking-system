@@ -34,7 +34,7 @@ public class SecurityConfig {
 		http.csrf(csrf -> csrf.disable())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/api/v1.0/flight/search", "/swagger-ui/**", "/v3/api-docs/**")
+						auth -> auth.requestMatchers("/api/v1.0/flight/search", "/api/v1.0/flight/{id}", "/swagger-ui/**", "/v3/api-docs/**")
 								.permitAll().requestMatchers("/api/v1.0/flight/airline/inventory")
 								.hasAnyRole("ADMIN", "AIRLINE_MODERATOR").anyRequest().authenticated());
 
