@@ -2,6 +2,8 @@ package com.flightapp.user_service.service;
 
 import com.flightapp.user_service.dto.JwtResponse;
 import com.flightapp.user_service.dto.LoginRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.flightapp.user_service.dto.MessageResponse;
 import com.flightapp.user_service.dto.SignupRequest;
 import com.flightapp.user_service.dto.TokenRefreshRequest;
@@ -127,8 +129,8 @@ public class AuthService {
         SecurityContextHolder.clearContext();
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     public MessageResponse blockUser(String username, boolean block, String adminName) {
