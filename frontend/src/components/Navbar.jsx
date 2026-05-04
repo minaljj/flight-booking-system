@@ -14,20 +14,10 @@ export default function Navbar() {
       const storedUser = localStorage.getItem('user');
       const user = storedUser ? JSON.parse(storedUser) : null;
       setUser(user);
-
-      const token = localStorage.getItem('token');
       const storedUsername = localStorage.getItem('username');
-
       if (storedUsername) {
         setUsername(storedUsername);
-      } else if (token) {
-        try {
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          setUsername(payload.sub || user?.username || 'User');
-        } catch (error) {
-          setUsername(user?.username || 'User');
-        }
-      } else {
+      }  else {
         setUsername('');
       }
     };

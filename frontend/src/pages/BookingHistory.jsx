@@ -21,12 +21,13 @@ function BookingHistory() {
    const user = userStr ? JSON.parse(userStr) : null;
 
    const { data: bookingsData, isLoading } = useQuery({
-      queryKey: ['bookings', user?.email, page],
+      queryKey: ['bookings', user?.email || user?.username, page],
       queryFn: async () => {
-         const response = await api.get(`/api/v1.0/flight/booking/history/${user?.email}?page=${page}&size=${size}`);
+         const identifier = user?.email || user?.username;
+         const response = await api.get(`/api/v1.0/flight/booking/history/${identifier}?page=${page}&size=${size}`);
          return response.data;
       },
-      enabled: !!user?.email
+      enabled: !!(user?.email || user?.username)
    });
    const bookings = bookingsData?.content || [];
    const totalPages = bookingsData?.totalPages || 0;
@@ -53,7 +54,7 @@ function BookingHistory() {
                <p className="text-slate-500 font-medium mt-1">Management of your active and historical flight rotations.</p>
             </div>
             <div className="bg-slate-50 px-6 py-3 rounded-2xl border border-slate-100 flex items-center gap-3">
-               <span className="text-sm font-black text-slate-400 uppercase tracking-widest">Total Vaulted</span>
+               <span className="text-sm font-black text-slate-400 uppercase tracking-widest">Total Bookings</span>
                <span className="text-2xl font-black text-blue-600">{totalElements}</span>
             </div>
          </div>
@@ -92,7 +93,7 @@ function BookingHistory() {
                            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 pt-4 border-t border-slate-50">
                               <div>
                                  <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Traveler</p>
-                                 <p className="font-bold text-slate-900 text-sm truncate">{booking.name}</p>
+                                 <p className="font-bold text-slate-900 text-sm truncate">Verified Traveler</p>
                               </div>
                               <div>
                                  <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Booked On</p>
@@ -106,18 +107,20 @@ function BookingHistory() {
                         </div>
 
                         <div className="flex flex-col gap-3 min-w-[180px]">
-                           <Link to={`/ticket/${booking.pnr}`} className="w-full">
-                              <Button className="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-black h-12 rounded-xl border border-slate-200 shadow-sm transition-all group-hover:bg-white">
-                                 View Boarding Pass
-                              </Button>
-                           </Link>
+                           {booking.status === 'BOOKED' && (
+                              <Link to={`/ticket/${booking.pnr}`} className="w-full">
+                                 <Button className="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-black h-12 rounded-xl border border-slate-200 shadow-sm transition-all group-hover:bg-white">
+                                    View Boarding Pass
+                                 </Button>
+                              </Link>
+                           )}
                            {booking.status === 'BOOKED' && (
                               <Button
                                  variant="ghost"
                                  onClick={() => cancelMutation.mutate(booking.pnr)}
                                  className="w-full text-slate-400 hover:text-rose-600 hover:bg-rose-50 text-xs font-black uppercase tracking-widest h-10 rounded-xl transition-all"
                               >
-                                 <Trash2 className="w-3.5 h-3.5 mr-2" /> Decanonize Invitation
+                                 <Trash2 className="w-3.5 h-3.5 mr-2" /> Cancel Booking
                               </Button>
                            )}
                         </div>
