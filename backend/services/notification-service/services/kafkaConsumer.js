@@ -1,6 +1,5 @@
 const { Kafka } = require('kafkajs');
 const emailService = require('./emailService');
-//const { sendSms } = require('./smsService');
 const emailTemplates = require('./emailTemplates');
 
 const kafka = new Kafka({
@@ -23,12 +22,11 @@ const run = async () => {
           const text = `Your booking (PNR: ${pnr}) for ${seats} seats is confirmed!`;
           const html = emailTemplates.getConfirmationTemplate(pnr, seats);
           await emailService.sendEmail(email, 'Booking Confirmed', text, html);
-          //await fast2smsService.sendSms(phone, `Flight App: Booking PNR ${pnr} Confirmed!`);
         } else if (type === 'BOOKING_CANCELLED') {
           const text = `Your booking (PNR: ${pnr}) has been cancelled.`;
           const html = emailTemplates.getCancellationTemplate(pnr);
           await emailService.sendEmail(email, 'Booking Cancelled', text, html);
-          //await fast2smsService.sendSms(phone, `Flight App: Booking PNR ${pnr} Cancelled.`);
+
         }
       } catch (err) {
         console.error('Error processing Kafka message:', err);
