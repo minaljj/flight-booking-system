@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -258,11 +259,14 @@ public class AuthControllerTest {
 	@Test
 	@WithMockUser(roles = { "ADMIN" })
 	public void testGetAllUsersForAdminRole() throws Exception {
-		Mockito.when(authService.getAllUsers()).thenReturn(Collections.emptyList());
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1.0/flight/auth/admin/users")).andExpect(status().isOk())
-				.andExpect(status().isOk());
-	}
+	    Mockito.when(authService.getAllUsers(Mockito.any(Pageable.class)))
+	           .thenReturn(org.springframework.data.domain.Page.empty());
 
+	    mockMvc.perform(MockMvcRequestBuilders.get("/api/v1.0/flight/auth/admin/users")
+	            .param("page", "0")
+	            .param("size", "10"))
+	            .andExpect(status().isOk());
+	}
 	@Test
 	@WithMockUser(roles = { "USER" })
 	public void testGetAllUsersForUserRole() throws Exception {
