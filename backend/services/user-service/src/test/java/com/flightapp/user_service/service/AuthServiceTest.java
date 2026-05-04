@@ -35,6 +35,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -247,9 +252,13 @@ public class AuthServiceTest {
 
 	@Test
 	public void testGetAllUsers() {
-		when(userRepository.findAll()).thenReturn(Arrays.asList(new User(), new User()));
-		List<User> users = authService.getAllUsers();
-		assertEquals(2, users.size());
-		verify(userRepository).findAll();
+	    Pageable pageable = PageRequest.of(0, 10);
+	    List<User> userList = Arrays.asList(new User(), new User());
+	    Page<User> userPage = new PageImpl<>(userList);
+	    when(userRepository.findAll(pageable)).thenReturn(userPage);
+	    Page<User> result = authService.getAllUsers(pageable);
+	    assertEquals(2, result.getContent().size());
+	    assertEquals(0, result.getNumber()); // Page index
+	    verify(userRepository).findAll(pageable);
 	}
 }
