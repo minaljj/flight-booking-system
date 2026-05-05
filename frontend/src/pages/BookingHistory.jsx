@@ -21,7 +21,7 @@ function BookingHistory() {
    const user = userStr ? JSON.parse(userStr) : null;
 
    const { data: bookingsData, isLoading } = useQuery({
-      queryKey: ['bookings', user?.email || user?.username, page],
+      queryKey: ['bookings', user?.email || user?.username, page,size],
       queryFn: async () => {
          const identifier = user?.email || user?.username;
          const response = await api.get(`/api/v1.0/flight/booking/history/${identifier}?page=${page}&size=${size}`);
