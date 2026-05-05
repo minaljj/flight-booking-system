@@ -16,7 +16,7 @@ export default function SearchResults() {
   const [size, setSize] = useState(10);
 
   const { data: flightsData, isLoading } = useQuery({
-    queryKey: ['flights', fromParam, toParam, date, page],
+    queryKey: ['flights', fromParam, toParam, date, page,size],
     queryFn: async () => {
       const response = await api.post(`/api/v1.0/flight/search?page=${page}&size=${size}`, {
         from: fromParam || '',

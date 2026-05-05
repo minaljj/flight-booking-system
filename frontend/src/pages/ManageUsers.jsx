@@ -18,7 +18,7 @@ function ManageUsers() {
   const [size, setSize] = useState(10);
 
   const { data: usersData, isLoading } = useQuery({
-    queryKey: ['admin-users', page],
+    queryKey: ['admin-users', page,size],
     queryFn: async () => {
       const response = await api.get(`/api/v1.0/flight/auth/admin/users?page=${page}&size=${size}`);
       return response.data;

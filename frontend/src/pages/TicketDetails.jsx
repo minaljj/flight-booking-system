@@ -9,7 +9,6 @@ import { format } from 'date-fns';
 import { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { parseDate } from '@/lib/dateUtils';
-import { withAuth } from '@/lib/withAuth';
 import QRCode from 'react-qr-code';
 
 function TicketDetails() {
@@ -21,6 +20,7 @@ function TicketDetails() {
       documentTitle: `FlightApp-Ticket-${pnr}`,
    });
 
+   console.log("Hello");
    const { data: booking, isLoading } = useQuery({
       queryKey: ['ticket', pnr],
       queryFn: async () => {
@@ -167,4 +167,4 @@ function TicketInfo({ label, val }) {
    );
 }
 
-export default withAuth(TicketDetails);
+export default TicketDetails;

@@ -55,7 +55,7 @@ function FlightInventory() {
    });
 
    const { data: flightsData, isLoading } = useQuery({
-      queryKey: ['flights-inventory', page],
+      queryKey: ['flights-inventory', page,size],
       queryFn: async () => {
          const response = await api.get(`/api/v1.0/flight/all?page=${page}&size=${size}`);
          return response.data;
