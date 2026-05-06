@@ -20,7 +20,6 @@ function TicketDetails() {
       documentTitle: `FlightApp-Ticket-${pnr}`,
    });
 
-   console.log("Hello");
    const { data: booking, isLoading } = useQuery({
       queryKey: ['ticket', pnr],
       queryFn: async () => {
