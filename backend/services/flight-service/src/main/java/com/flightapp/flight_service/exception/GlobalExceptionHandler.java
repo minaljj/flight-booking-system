@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @RestControllerAdvice
@@ -26,8 +27,8 @@ public class GlobalExceptionHandler {
 
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
-    public Map<String, String> handleNotFound(org.springframework.web.server.ResponseStatusException ex) {
+    @ExceptionHandler(ResponseStatusException.class)
+    public Map<String, String> handleNotFound(ResponseStatusException ex) {
         Map<String, String> error = new HashMap<>();
         error.put("message",ex.getReason());
         return error;
